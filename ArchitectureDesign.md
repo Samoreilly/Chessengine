@@ -4,7 +4,7 @@ Board - Simple 1D or 2D array for pieces (avoiding complex bitmasking for now)
 Minimax - Looks few moves ahead
 Pruning - Can skip bad lines/branches
 
-
+0 is empty square
 White Pawn - 1, Black Pawn - -1
 White Rook - 2, Black Rook - -2
 White Bishop - 3, Black Bishop - -3

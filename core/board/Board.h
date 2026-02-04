@@ -1,13 +1,55 @@
+#pragma once
+
+#include <iostream>
 #include <array>
+#include <cstdint>
+
+//0 is empty square
+//White Pawn - 1, Black Pawn - -1
+//White Rook - 2, Black Rook - -2
+//White Bishop - 3, Black Bishop - -3
+//White Knight - 4, Black Knight - -4
+//White Queen - 5, Black Queen - -5
+//White King - 6, Black King - -6
+
 
 class Board {
 
     //flat 1d array representing 2d array
     //white - 16 ints, black - last 16 ints
-    std::array<int, 64> board;
+    //Positives is white, Negatives is black
+    
+    std::array<int8_t, 64> board;
 
 public:
 
+    Board() {
+    
+        board =  {  2, 4, 3, 5, 6, 3, 4, 2,
+                    1, 1, 1, 1, 1, 1, 1, 1,
+                    0, 0, 0, 0, 0, 0, 0, 0,
+                    0, 0, 0, 0, 0, 0, 0, 0,
+                    0, 0, 0, 0, 0, 0, 0, 0,
+                    0, 0, 0, 0, 0, 0, 0, 0,
+                    -1, -1, -1, -1, -1, -1, -1, -1,
+                    -2, -4, -3, -5, -6, -3, -4, -2, 
+        };
+
+    }
+
+    std::array<int8_t, 64>& getBoard() {
+        return board;
+    }
+
+    void printBoard() {
+        
+        for(int i = board.size() - 1;i >= 0; i--) {
+                  
+            std::cout << static_cast<int>(board.at(i)) << " ";
+            if(i % 8 == 0) std::cout << "\n";         
+        }
+        std::cout << "\n";
+    }
     
 
 };
