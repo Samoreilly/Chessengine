@@ -28,7 +28,7 @@ inline int8_t getIndex(std::string str) {
     
     std::cout << "INDEX->" << index;
 
-    return col;
+    return index;
 }
 
 

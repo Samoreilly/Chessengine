@@ -53,14 +53,16 @@ public:
     }
 
     void printBoard() {
-        
-        for(int i = board.size() - 1;i >= 0; i--) {
-                  
-            std::cout << static_cast<int>(board.at(i)) << " ";
-            if(i % 8 == 0) std::cout << "\n";         
-        }
 
-        std::cout << "\n";
+        for(int r = 7; r >= 0; --r){
+            for(int c = 0; c < 8; ++c) {
+                
+                int index = r * 8 + c;
+                std::cout << static_cast<int>(board.at(index)) << " ";
+            
+            }
+            std::cout << "\n";
+        }
     }
     
 

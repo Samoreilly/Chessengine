@@ -14,9 +14,11 @@ int Shell::run() {
 
         std::string move;
         std::cin >> move;
-        
+       
+        std::cout << "MOVE->" << move;
+
         if(!handleMove(move)) {
-            std::cout << "Invalid move";
+            std::cout << "wwwwInvalid move\n";
             continue;
         }
 
@@ -40,28 +42,38 @@ bool Shell::handleMove(std::string& move) {
         || (fromIndex == toIndex)) return false;
 
     
-    PieceType piece = p.getPieceType(board.at(fromIndex));
+    PieceType piece = p.getPieceType(abs(board.at(fromIndex)));
+    
+    std::cout << "===";
+    std::cout << "PIECE" << static_cast<int>(piece);
+    std::cout << "===";
 
     switch(piece) {
     
         case PieceType::PAWN:
+            std::cout << "PAWN";
             p.pawnMove(fromIndex, toIndex);
             break;
 
         case PieceType::ROOK:
             p.rookMove(fromIndex, toIndex);
+            break;
 
         case PieceType::KNIGHT:
             p.knightMove(fromIndex, toIndex);
+            break;
 
         case PieceType::BISHOP:
             p.bishopMove(fromIndex, toIndex);
+            break;
 
         case PieceType::QUEEN:
             p.queenMove(fromIndex, toIndex);
+            break;
 
         case PieceType::KING:
             p.kingMove(fromIndex, toIndex);
+            break;
 
         default: p.emptyMove(fromIndex, toIndex);
 
