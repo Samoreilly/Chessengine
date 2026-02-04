@@ -16,7 +16,7 @@ public:
 
     Piece(Board& b) : b(b) {}
     
-    std::array<int8_t, 64> board = b.getBoard();
+    std::array<int8_t, 64>& board = b.getBoard();
     
 
     PieceType getPieceType(int piece) {

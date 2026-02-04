@@ -12,6 +12,12 @@
 //White Queen - 5, Black Queen - -5
 //White King - 6, Black King - -6
 
+struct LastMove {
+    int to;
+    int from;
+    int piece;
+
+};
 
 class Board {
 
@@ -20,10 +26,11 @@ class Board {
     //Positives is white, Negatives is black
     
     std::array<int8_t, 64> board;
+    LastMove lastMove;
 
 public:
 
-    Board() {
+    Board() : lastMove{-1, -1, 0} {
     
         board =  {  2, 4, 3, 5, 6, 3, 4, 2,
                     1, 1, 1, 1, 1, 1, 1, 1,
@@ -39,6 +46,10 @@ public:
 
     std::array<int8_t, 64>& getBoard() {
         return board;
+    }
+
+    LastMove& getLastMove() {
+        return lastMove;
     }
 
     void printBoard() {

@@ -1,6 +1,8 @@
 #include "Board.h"
 #include "Piece.h"
 
+#include <cstdlib>
+
 //  0  1  2  3  4  5  6  7
 //  8  9 10 11 12 13 14 15
 // 16 17 18 19 20 21 22 23
@@ -19,7 +21,52 @@
 //  8  9 10 11 12 13 14 15
 //  0  1  2  3  4  5  6  7
 
+
+//en passant and double moves
 bool Piece::pawnMove(int from, int to) {
+
+    bool white = (board.at(from) > 0);
+    bool enpassant = (from / 8 == 1);
+
+    int step = white ? 1 : -1;
+
+    LastMove lm = b.getLastMove();
+    
+    if(from % 8 == to % 8) {
+        
+        if(white && to - from) {
+            
+            for(int i = from;i != to; i += step) {
+                
+                if(board.at(i) == 0) {
+                    std::cout << "Invalid move";
+                    return false;
+                }
+            }
+            
+            board.at(from) = 0;
+            board.at(to) = white ? 1 : -1;
+            
+        }
+    
+    //check for en passant, left or right column and also if previous move was 2 squares
+    }else if(from % 8 - 1 == to % 8 || from % 8 + 1 == to % 8) {
+        
+        int step = board.at(from) > 0 ? -8 : 8; //if white check the piece below for en passant 
+
+        //then the piece below must be a pawn and the position of it must equal lm.to
+        //check if piece is opposite of current color 1 == -1, last piece moved was the piece were taking and it moved 2 squares
+
+        if(std::abs((from % 8) - (to % 8)) == 1 && board.at(to - step) == -board.at(from) && board.at(to - step) == lm.to && abs(lm.to - lm.from) == 16) {
+            board.at(to - step) = 0;
+            board.at(to) = board.at(from);
+            board.at(from) = 0;
+            
+            std::cout << "En passant-ed";
+            return true;
+        }
+    }
+
 
     return false;
 
@@ -33,8 +80,8 @@ bool Piece::rookMove(int from, int to) {
 
     if((sameColT != sameColF) && (sameRowT != sameRowF)) return false;
 
-    //if same col move up/down 8, if same row right/left 1
-    
+    //if same col move up/down 8, if same row right/left
+
     int step;
 
     if(sameColT == sameColF) {
