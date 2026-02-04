@@ -1,15 +1,20 @@
 #pragma once
 
 #include "../board/Board.h"
+#include "../board/Piece.h"
 
 class Shell {
 
-    Board& board;
+    Board b;
+    Piece p{b};
 
 public:
 
-    Shell(Board& board) : board(board) {}
-    
+    Shell() {}
+
+    std::array<int8_t, 64>& board = b.getBoard();
+
     int run();
+    bool handleMove(std::string& move);
 
 };

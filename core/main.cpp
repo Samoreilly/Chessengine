@@ -1,3 +1,4 @@
+#include "Utils.h"
 #include "board/Board.h"
 #include "engine/Shell.h"
 #include <iostream>
@@ -6,11 +7,17 @@ int main() {
 
     std::cout << "\nInitializing board..\n\n\n";
 
-    Board b;
+    int x = 10/8;
+    int y = 58/8;
 
-    auto board = b.getBoard(); 
+    int modX = 10 % 8;
+    int modY = 58 % 8;
 
-    Shell shell(b);
+    std::cout << x << y << "\n\n" ; 
+
+    std::cout << modX << modY << "\n\n";
+
+    Shell shell;
     
     return shell.run();
     

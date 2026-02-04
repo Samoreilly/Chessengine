@@ -6,4 +6,6 @@ set(CMAKE_CXX_STANDARD 20)
 add_executable(
   ChessEngine core/main.cpp 
   core/engine/Shell.cpp
+  core/board/Piece.cpp
+  core/board/Board.cpp
 )
