@@ -1,5 +1,5 @@
 #include "board/Board.h"
-
+#include "engine/Shell.h"
 #include <iostream>
 
 int main() {
@@ -8,9 +8,11 @@ int main() {
 
     Board b;
 
-    auto& board = b.getBoard();
-        
-    b.printBoard();
+    auto board = b.getBoard(); 
+
+    Shell shell(b);
+    
+    return shell.run();
     
 
 }

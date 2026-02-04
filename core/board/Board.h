@@ -48,6 +48,7 @@ public:
             std::cout << static_cast<int>(board.at(i)) << " ";
             if(i % 8 == 0) std::cout << "\n";         
         }
+
         std::cout << "\n";
     }
     

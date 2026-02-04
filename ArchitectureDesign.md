@@ -24,5 +24,12 @@ A bar or percentage representing the favouribility of both players winning
 
 
 
+# SHELL HIGH LEVEL OVERVIEW
+
+- Continuous loop
+- Take 2 user inputs, piece to move and destination e.g. b2 and b4 or I could
+ take it in on one input like b2-b4
+
+- If valid, move piece, print board + evaluation etc
 
 
