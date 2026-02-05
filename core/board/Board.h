@@ -17,7 +17,6 @@ struct LastMove {
     int to;
     int from;
     int piece;
-
 };
 
 class Board {
@@ -54,6 +53,7 @@ public:
     }
 
     void printBoard() {
+        std::cout << "\n\n";
 
         for(int r = 7; r >= 0; --r){
             for(int c = 0; c < 8; ++c) {

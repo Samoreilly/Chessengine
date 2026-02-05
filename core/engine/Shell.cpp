@@ -53,15 +53,12 @@ bool Shell::handleMove(std::string& move) {
     
         case PieceType::PAWN:
             return p.pawnMove(fromIndex, toIndex);
-            break;
 
         case PieceType::ROOK:
-            p.rookMove(fromIndex, toIndex);
-            break;
+            return p.rookMove(fromIndex, toIndex);
 
         case PieceType::KNIGHT:
-            p.knightMove(fromIndex, toIndex);
-            break;
+            return p.knightMove(fromIndex, toIndex);
 
         case PieceType::BISHOP:
             p.bishopMove(fromIndex, toIndex);
@@ -72,8 +69,8 @@ bool Shell::handleMove(std::string& move) {
             break;
 
         case PieceType::KING:
-            p.kingMove(fromIndex, toIndex);
-            break;
+            return p.kingMove(fromIndex, toIndex);
+
 
         default: p.emptyMove(fromIndex, toIndex);
 
