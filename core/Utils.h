@@ -26,7 +26,7 @@ inline int8_t getIndex(std::string str) {
 
     int index = row * 8 + col;
     
-    std::cout << "INDEX->" << index;
+    //std::cout << "INDEX->" << index;
 
     return index;
 }

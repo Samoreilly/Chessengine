@@ -14,11 +14,12 @@ int Shell::run() {
 
         std::string move;
         std::cin >> move;
-       
-        std::cout << "MOVE->" << move;
+        std::cout << "\n\n\n";
+
+        //std::cout << "MOVE->" << move << "\n\n";
 
         if(!handleMove(move)) {
-            std::cout << "wwwwInvalid move\n";
+            std::cout << "Invalid move\n";
             continue;
         }
 
@@ -44,15 +45,14 @@ bool Shell::handleMove(std::string& move) {
     
     PieceType piece = p.getPieceType(abs(board.at(fromIndex)));
     
-    std::cout << "===";
-    std::cout << "PIECE" << static_cast<int>(piece);
-    std::cout << "===";
+    //std::cout << "===\n";
+    //std::cout << "PIECE-> " << static_cast<int>(piece) << "\n";
+    //std::cout << "===\n";
 
     switch(piece) {
     
         case PieceType::PAWN:
-            std::cout << "PAWN";
-            p.pawnMove(fromIndex, toIndex);
+            return p.pawnMove(fromIndex, toIndex);
             break;
 
         case PieceType::ROOK:

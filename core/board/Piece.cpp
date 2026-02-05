@@ -2,6 +2,7 @@
 #include "Piece.h"
 #include <cstdlib>
 
+//This one
 //  0  1  2  3  4  5  6  7
 //  8  9 10 11 12 13 14 15
 // 16 17 18 19 20 21 22 23
@@ -24,46 +25,54 @@
 //en passant and double moves
 bool Piece::pawnMove(int from, int to) {
 
+    
+    
     bool white = (board.at(from) > 0);
     bool enpassant = (from / 8 == 1);
 
     int step = white ? 8 : -8;
 
-    LastMove lm = b.getLastMove();
+    LastMove& lm = b.getLastMove();
     
-    std::cout << "HHHHH";
     if(from % 8 == to % 8) {
-        
-        if(white && abs(to - from) <= 16) {
+        if(!white) std::cout << "Black piece";
+
+        if(abs(to - from) <= 16) {
             
             for(int i = from;i < to - from; i += step) {
-                std::cout << i;                
+                   
                 if(board.at(i) == 0) {                    
                     
-                    std::cout << "hereInvalid move";
+                    std::cout << "Invalid move";
                     return false;
                 }
             }
             
             board.at(from) = 0;
             board.at(to) = white ? 1 : -1;
-            
+            lm.from = from;
+            lm.to = to;
+            lm.piece = white ? 1 : -1;
+            return true;            
         }
     
     //check for en passant, left or right column and also if previous move was 2 squares
     }else if(from % 8 - 1 == to % 8 || from % 8 + 1 == to % 8) {
-        
+        std::cout << "Entering en passant logic";
+
         int step = board.at(from) > 0 ? -8 : 8; //if white check the piece below for en passant 
 
         //then the piece below must be a pawn and the position of it must equal lm.to
         //check if piece is opposite of current color 1 == -1, last piece moved was the piece were taking and it moved 2 squares
         //'to' must be unoccupied
-        if(std::abs((from % 8) - (to % 8)) == 1 && board.at(to) == 0 && board.at(to - step) == -board.at(from) && to - step == lm.to && abs(lm.to - lm.from) == 16) {
-            board.at(to - step) = 0;
+        if(std::abs((from % 8) - (to % 8)) == 1 && board.at(to) == 0 && board.at(to + step) == -board.at(from) && to + step == lm.to && abs(lm.to - lm.from) == 16) {
+            std::cout << "Entering inner if statement en passant logic";
+
+            board.at(to + step) = 0;
             board.at(to) = board.at(from);
             board.at(from) = 0;
             
-            std::cout << "En passant-ed";
+            std::cout << "En passant";
             return true;
         }
     }
