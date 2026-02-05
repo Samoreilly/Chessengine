@@ -186,11 +186,61 @@ bool Piece::knightMove(int from, int to) {
     return false;
 }
 
+// 56 57 58 59 60 61 62 63
+// 48 49 50 51 52 53 54 55
+// 40 41 42 43 44 45 46 47
+// 32 33 34 35 36 37 38 39
+// 24 25 26 27 28 29 30 31
+// 16 17 18 19 20 21 22 23
+//  8  9 10 11 12 13 14 15
+//  0  1  2  3  4  5  6  7
+
+//up-left and down right +-7
+//up-right and down left +-9
+
 bool Piece::bishopMove(int from, int to) {
+    int fromRow = from / 8;
+    int fromCol = from % 8;
+    int toRow   = to / 8;
+    int toCol   = to % 8;
 
+    int dr = toRow - fromRow;
+    int dc = toCol - fromCol;
 
-    return false;
+    if (abs(dr) != (dc)) {
+        std::cout << "Invalid move";
+        return false;
+    }
+
+    
+    int stepRow = (dr > 0) ? 1 : -1;
+    int stepCol = (dc > 0) ? 1 : -1;
+
+    int r = fromRow + stepRow;
+    int c = fromCol + stepCol;
+
+    while (r != toRow || c != toCol) {
+        int idx = r * 8 + c;
+
+        if (board.at(idx) != 0) {
+            std::cout << "Path blocked";
+            return false;
+        }
+
+        r += stepRow;
+        c += stepCol;
+    }
+
+    if (board.at(to) != 0 && !isOpponent(b, from, to)) {
+        std::cout << "Invalid capture";
+        return false;
+    }
+
+    board.at(to) = board.at(from);
+    board.at(from) = 0;
+    return true;
 }
+
 
 bool Piece::queenMove(int from, int to) {
 
