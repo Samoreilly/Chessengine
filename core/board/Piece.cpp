@@ -1,6 +1,7 @@
 #include "Board.h"
 #include "Piece.h"
 #include <cstdlib>
+#include "../Utils.h"
 
 //This one
 //  0  1  2  3  4  5  6  7
@@ -25,8 +26,6 @@
 //en passant and double moves
 bool Piece::pawnMove(int from, int to) {
 
-    
-    
     bool white = (board.at(from) > 0);
     bool enpassant = (from / 8 == 1);
 
@@ -39,9 +38,9 @@ bool Piece::pawnMove(int from, int to) {
 
         if(abs(to - from) <= 16) {
             
-            for(int i = from;i < to - from; i += step) {
+            for(int i = from + step;i != to; i += step) {
                    
-                if(board.at(i) == 0) {                    
+                if(board.at(i) != 0) {                    
                     
                     std::cout << "Invalid move";
                     return false;
@@ -52,26 +51,45 @@ bool Piece::pawnMove(int from, int to) {
             board.at(to) = white ? 1 : -1;
             lm.from = from;
             lm.to = to;
-            lm.piece = white ? 1 : -1;
+            lm.piece = board.at(to);
+
             return true;            
         }
     
-    //check for en passant, left or right column and also if previous move was 2 squares
-    }else if(from % 8 - 1 == to % 8 || from % 8 + 1 == to % 8) {
+    //check for en passant or diagonal capture, left or right column and also if previous move was 2 squares
+    }else if(abs(from % 8 - to % 8) == 1) {
         std::cout << "Entering en passant logic";
 
         int step = board.at(from) > 0 ? -8 : 8; //if white check the piece below for en passant 
+        
+        
+        //diagonal capture
+        if(board.at(to) != 0 && ((board.at(from) < 0 && board.at(to) > 0) || (board.at(from) > 0 && board.at(to) < 0))) {
+            board.at(to) = board.at(from);
+            board.at(from) = 0;
+
+            lm.from = from;
+            lm.to = to;
+            lm.piece = board.at(to);
+
+            std::cout << "Taken piece\n";
+            return true;
+        }
 
         //then the piece below must be a pawn and the position of it must equal lm.to
         //check if piece is opposite of current color 1 == -1, last piece moved was the piece were taking and it moved 2 squares
         //'to' must be unoccupied
-        if(std::abs((from % 8) - (to % 8)) == 1 && board.at(to) == 0 && board.at(to + step) == -board.at(from) && to + step == lm.to && abs(lm.to - lm.from) == 16) {
+        if(board.at(to) == 0 && board.at(to + step) == -board.at(from) && to + step == lm.to && abs(lm.to - lm.from) == 16) {
             std::cout << "Entering inner if statement en passant logic";
 
             board.at(to + step) = 0;
             board.at(to) = board.at(from);
             board.at(from) = 0;
             
+            lm.from = from;
+            lm.to = to;
+            lm.piece = board.at(to);
+
             std::cout << "En passant";
             return true;
         }
@@ -84,6 +102,8 @@ bool Piece::pawnMove(int from, int to) {
 
 //int from = 10, to = 50
 bool Piece::rookMove(int from, int to) {
+
+    LastMove& lm = b.getLastMove();
 
     int sameColF = from % 8, sameColT = to % 8;
     int sameRowF = from / 8, sameRowT = to / 8; 
@@ -101,6 +121,7 @@ bool Piece::rookMove(int from, int to) {
 
     int curr = from + step;
 
+
     while(curr != to) {
 
         if(board.at(curr) != 0) return false;
@@ -114,7 +135,18 @@ bool Piece::rookMove(int from, int to) {
 
     std::cout << "Moved pieced";
 
-    return true;
+    if(board.at(from) * board.at(to) <= 0) {
+        board.at(to) = board.at(from);
+        board.at(from) = 0;
+
+        lm.from = from;
+        lm.to = to;
+        lm.piece = board.at(to);
+
+        return true;                
+    }
+
+    return false;
 }
 
 bool Piece::knightMove(int from, int to) {
@@ -137,44 +169,35 @@ bool Piece::queenMove(int from, int to) {
 
 bool Piece::kingMove(int from, int to) {
 
-    if((from % 8 != to % 8) && (from / 2 != to / 2)) {
-        std::cout << "Invalid move";
+    std::cout << "Entered king logic";
+
+    LastMove& lm = b.getLastMove();
+
+    int rankDiff = abs(from / 8 - to / 8);
+    int fileDiff = abs(from % 8 - to % 8);
+
+    if(rankDiff > 1 || fileDiff > 1) {
+        std::cout << "You can only move your KING 1 square";
         return false;
-    } 
-
-    if(from % 8 == to % 8) {
-        if(abs(to - from) > 8) {
-            std::cout << "King can only move 1 square at a time";
-            return false;
-        }
-
-        if(board.at(to) == 0) {
-            board.at(to) = board.at(from);
-            board.at(from) = 0;
+    }
     
-            return true;
-        
-        }
-
-    }else {
-
-        if(abs(to - from) > 1) {
-            std::cout << "King can only move 1 square at a time";
-            return false;
-        }
-
-        if(board.at(to) == 0) {
-            board.at(to) = board.at(from);
-            board.at(from) = 0;
-    
-            return true;
-        
-        }
-
+    if(rankDiff == 0 && fileDiff == 0) {
+        std::cout << "Your king cannot be moved to the same spot";
+        return false;
     }
 
-    std::cout << "Square is occupied";
+    if(board.at(to) == 0 || isOpponent(b, from, to)) {
+        board.at(to) = board.at(from);
+        board.at(from) = 0;
 
+        lm.from = from;
+        lm.to = to;
+        lm.piece = board.at(to);
+
+        return true;
+    }
+
+    std::cout << "Square is occupied by your own piece\n";
     return false;
 }
 

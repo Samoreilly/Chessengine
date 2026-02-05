@@ -18,7 +18,7 @@ public:
     
     std::array<int8_t, 64>& board = b.getBoard();
     
-
+    
     PieceType getPieceType(int piece) {
         int absPiece = std::abs(piece);
         return static_cast<PieceType>(piece); 

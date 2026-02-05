@@ -3,6 +3,7 @@
 #include <iostream>
 #include <array>
 #include <cstdint>
+#include <iomanip>
 
 //0 is empty square
 //White Pawn - 1, Black Pawn - -1
@@ -58,7 +59,7 @@ public:
             for(int c = 0; c < 8; ++c) {
                 
                 int index = r * 8 + c;
-                std::cout << static_cast<int>(board.at(index)) << " ";
+                std::cout << std::setw(3) << static_cast<int>(board.at(index)) << " ";
             
             }
             std::cout << "\n";

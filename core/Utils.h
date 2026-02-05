@@ -3,6 +3,7 @@
 #include <utility>
 #include <string>
 #include <iostream>
+#include "board/Board.h"
 
 inline std::pair<std::string, std::string> getCoord(std::string& str) {
     
@@ -29,6 +30,10 @@ inline int8_t getIndex(std::string str) {
     //std::cout << "INDEX->" << index;
 
     return index;
+}
+
+inline bool isOpponent(Board& board, int from, int to) {
+    return board.getBoard().at(from) * board.getBoard().at(to) < 0;
 }
 
 
