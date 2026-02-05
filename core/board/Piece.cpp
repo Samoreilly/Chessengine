@@ -207,7 +207,9 @@ bool Piece::bishopMove(int from, int to) {
     int dr = toRow - fromRow;
     int dc = toCol - fromCol;
 
-    if (abs(dr) != (dc)) {
+    //checks if the rows and cols between from and to are equal
+    //as they must be
+    if (abs(dr) != abs(dc)) {
         std::cout << "Invalid move";
         return false;
     }
@@ -244,8 +246,54 @@ bool Piece::bishopMove(int from, int to) {
 
 bool Piece::queenMove(int from, int to) {
 
+    int colDiff = abs(from % 8 - to % 8);
+    int rowDiff = abs(from / 8 - to / 8);
+    
+    int fromRow = from / 8;
+    int fromCol = from % 8;
+    int toRow   = to / 8;
+    int toCol   = to % 8;
 
-    return false;
+    LastMove& lm = b.getLastMove();
+
+    if((from % 8 != to % 8 && from / 8 != to / 8 && colDiff != rowDiff)) {
+        std::cout << "Invalid move\n";
+        return false;
+    }
+
+    int dr = toRow - fromRow;
+    int dc = toCol - fromCol;
+
+    
+
+
+    int stepRow = (dr == 0) ? 0 : (dr > 0 ? 1 : -1);
+    int stepCol = (dc == 0) ? 0 : (dc > 0 ? 1 : -1);
+    
+    int r = fromRow + stepRow;
+    int c = fromCol + stepCol;
+
+    while(r != toRow || c != toCol) {
+        int idx = r * 8 + c;
+
+        if(board.at(idx) != 0) {
+            std::cout << "Invalid move\n";
+            return false;
+        }
+        
+        r += stepRow;
+        c += stepCol;
+
+    }
+
+    if (board.at(to) != 0 && !isOpponent(b, from, to)) {
+        std::cout << "Invalid capture";
+        return false;
+    }
+
+    board.at(to) = board.at(from);
+    board.at(from) = 0;
+    return true;
 }
 
 bool Piece::kingMove(int from, int to) {

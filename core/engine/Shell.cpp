@@ -61,12 +61,10 @@ bool Shell::handleMove(std::string& move) {
             return p.knightMove(fromIndex, toIndex);
 
         case PieceType::BISHOP:
-            p.bishopMove(fromIndex, toIndex);
-            break;
+            return p.bishopMove(fromIndex, toIndex);
 
         case PieceType::QUEEN:
-            p.queenMove(fromIndex, toIndex);
-            break;
+            return p.queenMove(fromIndex, toIndex);
 
         case PieceType::KING:
             return p.kingMove(fromIndex, toIndex);
