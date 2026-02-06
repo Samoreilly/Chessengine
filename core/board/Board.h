@@ -27,6 +27,8 @@ class Board {
     
     std::array<int8_t, 64> board;
     LastMove lastMove;
+    int whiteKing {4};
+    int blackKing {60};
 
 public:
 
@@ -42,6 +44,19 @@ public:
                     -2, -4, -3, -5, -6, -3, -4, -2, 
         };
 
+    }
+
+    void uKingPos(int8_t pos, bool white) {
+        if(white)whiteKing = pos;
+        else blackKing = pos;
+    }
+
+    int wKingPos() {
+        return whiteKing;
+    }
+
+    int bKingPos() {
+        return blackKing;
     }
 
     std::array<int8_t, 64>& getBoard() {

@@ -265,8 +265,6 @@ bool Piece::queenMove(int from, int to) {
     int dc = toCol - fromCol;
 
     
-
-
     int stepRow = (dr == 0) ? 0 : (dr > 0 ? 1 : -1);
     int stepCol = (dc == 0) ? 0 : (dc > 0 ? 1 : -1);
     

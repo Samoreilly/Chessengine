@@ -2,6 +2,7 @@
 #include "../Utils.h"
 #include <iostream>
 #include "../board/Piece.h"
+#include "../board/Check.h"
 
 int Shell::run() {
 
@@ -22,7 +23,11 @@ int Shell::run() {
             std::cout << "Invalid move\n";
             continue;
         }
-
+        
+        if(c.isCheck()) {
+            std::cout << "Check\n";
+            continue;
+        }
         
     }
     
@@ -68,7 +73,6 @@ bool Shell::handleMove(std::string& move) {
 
         case PieceType::KING:
             return p.kingMove(fromIndex, toIndex);
-
 
         default: p.emptyMove(fromIndex, toIndex);
 

@@ -2,11 +2,13 @@
 
 #include "../board/Board.h"
 #include "../board/Piece.h"
+#include "../board/Check.h"
 
 class Shell {
 
     Board b;
     Piece p{b};
+    Check c{b};
 
 public:
 

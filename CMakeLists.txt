@@ -8,4 +8,5 @@ add_executable(
   core/engine/Shell.cpp
   core/board/Piece.cpp
   core/board/Board.cpp
+  core/board/Check.cpp
 )
