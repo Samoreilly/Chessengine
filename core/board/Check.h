@@ -18,7 +18,8 @@ public:
     bool whiteCheck();
     bool blackCheck();
 
-    bool scanRookQueen(int8_t kingPos);
 
+    bool scanRookQueen(int kingPos);
+    bool scanDiagonal(int kingPos);
 
 };

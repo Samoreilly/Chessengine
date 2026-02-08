@@ -1,3 +1,5 @@
+
+
 #pragma once
 
 #include <iostream>
@@ -51,7 +53,7 @@ public:
         else blackKing = pos;
     }
 
-    int wKingPos() {
+    int8_t wKingPos() {
         return whiteKing;
     }
 
