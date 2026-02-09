@@ -6,6 +6,7 @@
 #include <array>
 #include <cstdint>
 #include <iomanip>
+#include <optional>
 
 //0 is empty square
 //White Pawn - 1, Black Pawn - -1
@@ -19,6 +20,7 @@ struct LastMove {
     int to;
     int from;
     int piece;
+    std::optional<int> pieceTaken;
 };
 
 class Board {
@@ -31,11 +33,12 @@ class Board {
     LastMove lastMove;
     int whiteKing {4};
     int blackKing {60};
-    
-    //state for white/black turn
-    bool white;
 
 public:
+
+     
+    //state for white/black turn
+    bool white;
 
     Board() : lastMove{-1, -1, 0} {
     
@@ -53,8 +56,16 @@ public:
 
     }
 
-    void setTurn(bool turn) {
+    void nextTurn() {
+        white = !white;
+    }
+
+    void setTurn(bool& turn) {
         white = turn;
+    }
+
+    bool& getTurn() {
+        return white;
     }
 
     bool isWhiteTurn() {
@@ -87,22 +98,11 @@ public:
     }
 
     void printBoard() {
-        std::cout << "\n\n   ";
-        
-        for(int i = 1; i <= 8;i++) {
-            std::cout << std::setw(3) << i << " ";
-        }
-        
-        std::cout << "\n   ";
-
-        for(int i = 1; i <= 8;i++) {
-            std::cout << std::setw(3) << "---" << " ";
-        }
         
         std::cout << "\n\n";
         for(int r = 7; r >= 0; --r){
-                
-            std::cout << 8 - r << "| ";
+            
+            std::cout << r + 1 << "| ";
             for(int c = 0; c < 8; ++c) {  
                 int index = r * 8 + c;
                 std::cout << std::setw(3) << static_cast<int>(board.at(index)) << " ";
@@ -110,6 +110,19 @@ public:
             }
             std::cout << "\n\n";
         }
+        std::cout << "    ";
+
+        for(int i = 1; i <= 8;i++) {
+            std::cout << std::setw(3) << "---" << " ";
+        }
+        
+        std::cout << "\n   ";
+        for(int i = 1; i <= 8;i++) {
+            std::cout << std::setw(3) <<  char(64 + i) << " ";
+        }
+
+        std::cout << "\n\n";
+
     }
     
 

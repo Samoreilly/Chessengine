@@ -34,7 +34,7 @@ bool Piece::pawnMove(int from, int to) {
     LastMove& lm = b.getLastMove();
     
     if(from % 8 == to % 8) {
-        if(!white) std::cout << "Black piece";
+        //if(!white) std::cout << "Black piece";
 
         if(abs(to - from) <= 16) {
             
@@ -47,32 +47,37 @@ bool Piece::pawnMove(int from, int to) {
                 }
             }
             
-            board.at(from) = 0;
-            board.at(to) = white ? 1 : -1;
+            
             lm.from = from;
             lm.to = to;
-            lm.piece = board.at(to);
+            lm.piece = board.at(from);
+            lm.pieceTaken = board.at(to);
+
+            board.at(from) = 0;
+            board.at(to) = white ? 1 : -1;
 
             return true;            
         }
     
     //check for en passant or diagonal capture, left or right column and also if previous move was 2 squares
     }else if(abs(from % 8 - to % 8) == 1) {
-        std::cout << "Entering en passant logic";
+        // std::cout << "Entering en passant logic";
 
         int step = board.at(from) > 0 ? -8 : 8; //if white check the piece below for en passant 
         
-        
         //diagonal capture
         if(board.at(to) != 0 && ((board.at(from) < 0 && board.at(to) > 0) || (board.at(from) > 0 && board.at(to) < 0))) {
+            
+            
+            lm.from = from;
+            lm.to = to;
+            lm.piece = board.at(from);
+            lm.pieceTaken = board.at(to);
+
             board.at(to) = board.at(from);
             board.at(from) = 0;
 
-            lm.from = from;
-            lm.to = to;
-            lm.piece = board.at(to);
-
-            std::cout << "Taken piece\n";
+            //std::cout << "Taken piece\n";
             return true;
         }
 
@@ -80,17 +85,19 @@ bool Piece::pawnMove(int from, int to) {
         //check if piece is opposite of current color 1 == -1, last piece moved was the piece were taking and it moved 2 squares
         //'to' must be unoccupied
         if(board.at(to) == 0 && board.at(to + step) == -board.at(from) && to + step == lm.to && abs(lm.to - lm.from) == 16) {
-            std::cout << "Entering inner if statement en passant logic";
+            //std::cout << "Entering inner if statement en passant logic\n";
+
+            lm.from = from;
+            lm.to = to;
+            lm.piece = board.at(from);
+            lm.pieceTaken = board.at(to);
 
             board.at(to + step) = 0;
             board.at(to) = board.at(from);
             board.at(from) = 0;
-            
-            lm.from = from;
-            lm.to = to;
-            lm.piece = board.at(to);
 
-            std::cout << "En passant";
+            std::cout << "En passant\n";
+            
             return true;
         }
     }
@@ -136,12 +143,14 @@ bool Piece::rookMove(int from, int to) {
     std::cout << "Moved pieced";
 
     if(board.at(from) * board.at(to) <= 0) {
-        board.at(to) = board.at(from);
-        board.at(from) = 0;
 
         lm.from = from;
         lm.to = to;
-        lm.piece = board.at(to);
+        lm.piece = board.at(from);
+        lm.pieceTaken = board.at(to);
+
+        board.at(to) = board.at(from);
+        board.at(from) = 0;
 
         return true;                
     }
@@ -161,7 +170,8 @@ bool Piece::rookMove(int from, int to) {
 
 bool Piece::knightMove(int from, int to) {
     
-    std::cout << "Entered knight logic";
+    //std::cout << "Entered knight logic";
+    LastMove& lm = b.getLastMove();
 
     int colDiff = abs(from % 8 - to % 8);
     int rowDiff = abs(from / 8 - to / 8);
@@ -172,11 +182,17 @@ bool Piece::knightMove(int from, int to) {
 
 
     if(isValid && (isOpponent(b, from, to) || board.at(to) == 0)) {
-        std::cout << "Entered knight inner logic";
+        //std::cout << "Entered knight inner logic";
+            
+        lm.from = from;
+        lm.to = to;
+        lm.piece = board.at(from);
+        lm.pieceTaken = board.at(to);
+
         board.at(to) = board.at(from);
         board.at(from) = 0;
 
-        std::cout << "Knight moved";
+        //std::cout << "Knight moved";
         return true;
     }
 
@@ -199,6 +215,9 @@ bool Piece::knightMove(int from, int to) {
 //up-right and down left +-9
 
 bool Piece::bishopMove(int from, int to) {
+
+    LastMove& lm = b.getLastMove();
+
     int fromRow = from / 8;
     int fromCol = from % 8;
     int toRow   = to / 8;
@@ -225,7 +244,7 @@ bool Piece::bishopMove(int from, int to) {
         int idx = r * 8 + c;
 
         if (board.at(idx) != 0) {
-            std::cout << "Path blocked";
+            //std::cout << "Path blocked";
             return false;
         }
 
@@ -238,6 +257,11 @@ bool Piece::bishopMove(int from, int to) {
         return false;
     }
 
+    lm.from = from;
+    lm.to = to;
+    lm.piece = board.at(from);
+    lm.pieceTaken = board.at(to);
+
     board.at(to) = board.at(from);
     board.at(from) = 0;
     return true;
@@ -246,6 +270,8 @@ bool Piece::bishopMove(int from, int to) {
 
 bool Piece::queenMove(int from, int to) {
 
+    LastMove& lm = b.getLastMove();
+
     int colDiff = abs(from % 8 - to % 8);
     int rowDiff = abs(from / 8 - to / 8);
     
@@ -253,8 +279,6 @@ bool Piece::queenMove(int from, int to) {
     int fromCol = from % 8;
     int toRow   = to / 8;
     int toCol   = to % 8;
-
-    LastMove& lm = b.getLastMove();
 
     if((from % 8 != to % 8 && from / 8 != to / 8 && colDiff != rowDiff)) {
         std::cout << "Invalid move\n";
@@ -289,6 +313,11 @@ bool Piece::queenMove(int from, int to) {
         return false;
     }
 
+    lm.from = from;
+    lm.to = to;
+    lm.piece = board.at(from);
+    lm.pieceTaken = board.at(to);
+
     board.at(to) = board.at(from);
     board.at(from) = 0;
     return true;
@@ -314,12 +343,14 @@ bool Piece::kingMove(int from, int to) {
     }
 
     if(board.at(to) == 0 || isOpponent(b, from, to)) {
-        board.at(to) = board.at(from);
-        board.at(from) = 0;
 
         lm.from = from;
         lm.to = to;
-        lm.piece = board.at(to);
+        lm.piece = board.at(from);
+        lm.pieceTaken = board.at(to);
+
+        board.at(to) = board.at(from);
+        board.at(from) = 0;
 
         return true;
     }

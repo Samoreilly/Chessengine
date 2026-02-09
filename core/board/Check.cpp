@@ -3,10 +3,11 @@
 #include "../Utils.h"
 #include "Board.h"
 #include "Piece.h"
+#include "Board.h"
 
-bool Check::isCheck() {
+bool Check::isCheck(bool turn) {
 
-    int kingPos = b.wKingPos();
+    int kingPos = turn ? b.wKingPos() : b.bKingPos();
 
     return scanRookQueen(kingPos) || scanDiagonal(kingPos) || scanKnight(kingPos);
 }
@@ -126,4 +127,16 @@ bool Check::scanKnight(int kingPos) {
     } 
 
     return false;
+}
+
+void Check::undoMove() {
+
+    LastMove& lm = b.getLastMove();
+
+    int8_t toPiece = board.at(lm.to);
+
+    board.at(lm.to) = board.at(lm.from);
+    board.at(lm.from) = toPiece;
+
+    std::cout << "You cannot move into check";
 }

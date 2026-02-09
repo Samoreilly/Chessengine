@@ -17,7 +17,7 @@ public:
 
     Check(Board& b) : b(b), board(b.getBoard()) {}
     
-    bool isCheck();
+    bool isCheck(bool turn);
     bool isCheckMate();
 
     bool whiteCheck();
@@ -26,5 +26,7 @@ public:
     bool scanRookQueen(int kingPos);
     bool scanDiagonal(int kingPos);
     bool scanKnight(int kingPos);
+
+    void undoMove();
 
 };

@@ -10,6 +10,8 @@ int Shell::run() {
 
     for(;;) {
         
+        bool& turn = b.getTurn();
+
         b.printBoard();
 
         std::cout << "Enter a move\n";
@@ -25,11 +27,15 @@ int Shell::run() {
             continue;
         }
         
-        if(c.isCheck()) {
+        if(c.isCheck(turn)) {
             std::cout << "Check\n";
+            //TODO: undo previous move
+            c.undoMove();
             continue;
         }
-        
+
+        b.nextTurn();
+
     }
     
     return 0;
@@ -47,7 +53,8 @@ bool Shell::handleMove(std::string& move) {
     
     if(fromIndex < 0 || fromIndex > 63 || toIndex < 0 || toIndex > 63 
         || (fromIndex == toIndex)) return false;
-
+    
+    //if piece that is being moved is the opposite of whos turn it is
     if((board.at(fromIndex) > 0 && b.isBlackTurn()) || (board.at(fromIndex) < 0 && b.isWhiteTurn())) {
         std::cout << "Not your turn";
         return false;
