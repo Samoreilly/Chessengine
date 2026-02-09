@@ -135,8 +135,9 @@ void Check::undoMove() {
 
     int8_t toPiece = board.at(lm.to);
 
-    board.at(lm.to) = board.at(lm.from);
+
+    board.at(lm.to) = lm.pieceTaken.has_value() ? lm.pieceTaken.value() : 0;
     board.at(lm.from) = toPiece;
 
-    std::cout << "You cannot move into check";
+    std::cout << "Your in check!";
 }

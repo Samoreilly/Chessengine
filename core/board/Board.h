@@ -20,7 +20,7 @@ struct LastMove {
     int to;
     int from;
     int piece;
-    std::optional<int> pieceTaken;
+    std::optional<int8_t> pieceTaken;
 };
 
 class Board {
