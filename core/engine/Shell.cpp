@@ -3,6 +3,7 @@
 #include <iostream>
 #include "../board/Piece.h"
 #include "../board/Check.h"
+#include "../board/Board.h"
 
 int Shell::run() {
 
@@ -47,7 +48,12 @@ bool Shell::handleMove(std::string& move) {
     if(fromIndex < 0 || fromIndex > 63 || toIndex < 0 || toIndex > 63 
         || (fromIndex == toIndex)) return false;
 
-    
+    if((board.at(fromIndex) > 0 && b.isBlackTurn()) || (board.at(fromIndex) < 0 && b.isWhiteTurn())) {
+        std::cout << "Not your turn";
+        return false;
+    }
+
+
     PieceType piece = p.getPieceType(abs(board.at(fromIndex)));
     
     //std::cout << "===\n";

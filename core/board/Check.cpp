@@ -4,10 +4,6 @@
 #include "Board.h"
 #include "Piece.h"
 
-int dirs[4][2] = {{-1, 0}, {1, 0}, {0, -1}, {0, 1}};
-int diag[4][2] = {{-1, 1}, {-1, -1}, {1, 1}, {1, -1}};
-int knight[8][2] = {{2, 1}, {2, -1}, {-2, 1}, {-2, -1}, {1, 2}, {1, -2}, {-1, 2}, {-1, -2}};
-
 bool Check::isCheck() {
 
     int kingPos = b.wKingPos();
@@ -15,18 +11,6 @@ bool Check::isCheck() {
     return scanRookQueen(kingPos) || scanDiagonal(kingPos) || scanKnight(kingPos);
 }
 
-
-
-bool Check::whiteCheck() {
- 
-    int8_t whiteKing = b.wKingPos();
-
-
-    //check up, down, left, right
-    
-
-
-}
 
 //4 cardinal directions
 bool Check::scanRookQueen(int kingPos) {

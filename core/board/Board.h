@@ -31,6 +31,9 @@ class Board {
     LastMove lastMove;
     int whiteKing {4};
     int blackKing {60};
+    
+    //state for white/black turn
+    bool white;
 
 public:
 
@@ -46,6 +49,20 @@ public:
                     -2, -4, -3, -5, -6, -3, -4, -2, 
         };
 
+        white = true;
+
+    }
+
+    void setTurn(bool turn) {
+        white = turn;
+    }
+
+    bool isWhiteTurn() {
+        return white;
+    }
+
+    bool isBlackTurn() {
+        return !white;
     }
 
     void uKingPos(int8_t pos, bool white) {
@@ -70,16 +87,28 @@ public:
     }
 
     void printBoard() {
-        std::cout << "\n\n";
+        std::cout << "\n\n   ";
+        
+        for(int i = 1; i <= 8;i++) {
+            std::cout << std::setw(3) << i << " ";
+        }
+        
+        std::cout << "\n   ";
 
+        for(int i = 1; i <= 8;i++) {
+            std::cout << std::setw(3) << "---" << " ";
+        }
+        
+        std::cout << "\n\n";
         for(int r = 7; r >= 0; --r){
-            for(int c = 0; c < 8; ++c) {
                 
+            std::cout << 8 - r << "| ";
+            for(int c = 0; c < 8; ++c) {  
                 int index = r * 8 + c;
                 std::cout << std::setw(3) << static_cast<int>(board.at(index)) << " ";
             
             }
-            std::cout << "\n";
+            std::cout << "\n\n";
         }
     }
     
