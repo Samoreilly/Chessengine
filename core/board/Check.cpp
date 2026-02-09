@@ -6,17 +6,13 @@
 
 int dirs[4][2] = {{-1, 0}, {1, 0}, {0, -1}, {0, 1}};
 int diag[4][2] = {{-1, 1}, {-1, -1}, {1, 1}, {1, -1}};
+int knight[8][2] = {{2, 1}, {2, -1}, {-2, 1}, {-2, -1}, {1, 2}, {1, -2}, {-1, 2}, {-1, -2}};
+
 bool Check::isCheck() {
 
     int kingPos = b.wKingPos();
-    std::cout << "KINGS POSITION" << kingPos;
 
-
-    return scanRookQueen(kingPos) || scanDiagonal(kingPos);
-
-
-
-
+    return scanRookQueen(kingPos) || scanDiagonal(kingPos) || scanKnight(kingPos);
 }
 
 
@@ -95,6 +91,44 @@ bool Check::scanDiagonal(int kingPos) {
                 
                 if (isOpponent(b, kingPos, idx) &&
                     (type == PieceType::BISHOP || type == PieceType::QUEEN)) {
+                    return true;
+                }
+                //not opponent
+                break;
+            }
+
+            r += rowStep;
+            c += colStep;
+        }
+
+    } 
+
+    return false;
+}
+
+bool Check::scanKnight(int kingPos) {
+
+    int fromRow = kingPos / 8;
+    int fromCol = kingPos % 8;
+
+    for(auto dir : knight) {
+        
+        int rowStep = dir[0];
+        int colStep = dir[1];
+
+        int r = fromRow + rowStep;
+        int c = fromCol + colStep;
+
+        while(r >= 0 && r < 8 && c >= 0 && c < 8) {
+
+            int idx = r * 8 + c;
+            int piece = board.at(idx);     
+
+            if (board.at(idx) != 0) {
+                PieceType type = static_cast<PieceType>(abs(piece)); 
+                
+                if (isOpponent(b, kingPos, idx) &&
+                    (type == PieceType::KNIGHT)) {
                     return true;
                 }
                 //not opponent

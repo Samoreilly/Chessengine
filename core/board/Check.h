@@ -21,5 +21,6 @@ public:
 
     bool scanRookQueen(int kingPos);
     bool scanDiagonal(int kingPos);
+    bool scanKnight(int kingPos);
 
 };
