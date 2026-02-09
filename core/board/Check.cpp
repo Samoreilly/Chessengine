@@ -9,7 +9,7 @@ bool Check::isCheck(bool turn) {
 
     int kingPos = turn ? b.wKingPos() : b.bKingPos();
 
-    return scanRookQueen(kingPos) || scanDiagonal(kingPos) || scanKnight(kingPos);
+    return scanRookQueen(kingPos) || scanDiagonal(kingPos) || scanKnight(kingPos) || scanPawn(kingPos);
 }
 
 
@@ -128,6 +128,36 @@ bool Check::scanKnight(int kingPos) {
 
     return false;
 }
+
+bool Check::scanPawn(int kingPos) {
+    int row = kingPos / 8;
+    int col = kingPos % 8;
+
+    bool kingIsWhite = board.at(kingPos) > 0;
+
+    // direction pawns attack FROM
+    int pawnRow = kingIsWhite ? row + 1 : row - 1;
+
+    for (int dc : {-1, 1}) {
+        int r = pawnRow;
+        int c = col + dc;
+
+        if (r >= 0 && r < 8 && c >= 0 && c < 8) {
+            int idx = r * 8 + c;
+            int p = board.at(idx);
+
+
+            int pawn = static_cast<int>(PieceType::PAWN);
+            if (p == (kingIsWhite ? -pawn : pawn)) {
+                return true;
+            }
+
+        }
+    }
+
+    return false;
+}
+
 
 void Check::undoMove() {
 

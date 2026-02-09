@@ -360,6 +360,10 @@ bool Piece::kingMove(int from, int to) {
 }
 
 bool Piece::emptyMove(int from, int to) {
+
+    if(board.at(from) == 0) {
+        std::cout << "Select a piece!";
+    }
     
     return false;
 }

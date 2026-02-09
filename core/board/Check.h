@@ -11,7 +11,7 @@ class Check {
     int dirs[4][2] = {{-1, 0}, {1, 0}, {0, -1}, {0, 1}};
     int diag[4][2] = {{-1, 1}, {-1, -1}, {1, 1}, {1, -1}};
     int knight[8][2] = {{2, 1}, {2, -1}, {-2, 1}, {-2, -1}, {1, 2}, {1, -2}, {-1, 2}, {-1, -2}};
-
+    int pawn[2][2] = {{1, 1}, {1, -1}};
 
 public:
 
@@ -26,6 +26,7 @@ public:
     bool scanRookQueen(int kingPos);
     bool scanDiagonal(int kingPos);
     bool scanKnight(int kingPos);
+    bool scanPawn(int kingPos);
 
     void undoMove();
 
