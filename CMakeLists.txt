@@ -9,4 +9,5 @@ add_executable(
   core/board/Piece.cpp
   core/board/Board.cpp
   core/board/Check.cpp
+  core/board/Generate.cpp
 )

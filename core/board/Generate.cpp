@@ -14,13 +14,8 @@ the generate() will loop through the board and return the current players turn m
 
 
 std::vector<Gen> Generate::generate(bool white) {
-
-
-    if(white) {
-        return generateWhite();
-    }else{
-        return generateBlack();
-    }   
+    clearGen(); 
+    return white ? generateWhite() : generateBlack(); 
 }
 
 std::vector<Gen> Generate::generateWhite() {
@@ -47,6 +42,29 @@ std::vector<Gen> Generate::generateWhite() {
     return moves;
 }
 
+std::vector<Gen> Generate::generateBlack() {
+    
+    int pieceCounter = 0;
+
+    for(int i = 7;i >= 0;i--) {
+        for(int j = 7; j >= 0;j--) {
+            int idx = i * 8 + j;
+            
+            if(board.at(idx) < 0) {
+                directGen(idx);
+                pieceCounter++;
+            }
+
+            if(pieceCounter == totalPieces) {
+                return moves;
+            }
+
+        }
+    }
+    
+    return moves;
+}
+
 void Generate::directGen(int idx) {
 
     PieceType pieceType = static_cast<PieceType>(abs(board.at(idx)));
@@ -59,7 +77,8 @@ void Generate::directGen(int idx) {
 
         case PieceType::PAWN:
             generatePawnMoves(idx);
-        
+            break;
+
         case PieceType::KNIGHT:
             generateKnightMoves(idx);
             break;
@@ -255,7 +274,7 @@ void Generate::generateKingMoves(int idx) {
 
 void Generate::generateRookMoves(int idx) {
    
-    const int rookDirs[4][2] = {{-1, 0}, {0, -1}, {1, 0}, {0, 1}};
+    static const int rookDirs[4][2] = {{-1, 0}, {0, -1}, {1, 0}, {0, 1}};
 
     int row = idx / 8;
     int col = idx % 8;
@@ -330,9 +349,8 @@ void Generate::generateKnightMoves(int idx) {
 }
 
 void Generate::generateQueenMoves(int idx) {
-    
 
-    const int queenDirs[8][2] = {
+    static const int queenDirs[8][2] = {
         {-1,  0},
         { 1,  0},
         { 0, -1},
@@ -376,12 +394,13 @@ void Generate::generateQueenMoves(int idx) {
                 break;
             }
 
+            r += dir[0];
+            c += dir[1];
+
         }
 
 
     }
-
-
 }
 
 

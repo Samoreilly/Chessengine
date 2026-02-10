@@ -4,6 +4,7 @@
 #include "../board/Piece.h"
 #include "../board/Check.h"
 #include "../board/Board.h"
+#include "../board/Generate.h"
 
 int Shell::run() {
 
@@ -29,9 +30,18 @@ int Shell::run() {
         
         if(c.isCheck(turn)) {
             std::cout << "Check\n";
-            //TODO: undo previous move
             c.undoMove();
             continue;
+        }
+        
+        std::vector<Gen> gen = g.generate(turn);
+        
+        for (auto& g : gen) {
+            std::cout << "From: " << g.from
+                    << " To: " << g.to
+                    << " Piece: " << g.piece
+                    << " Taken: " << g.pieceTaken
+                    << std::endl;
         }
 
         b.nextTurn();

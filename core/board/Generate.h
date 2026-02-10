@@ -1,5 +1,6 @@
-#include "Board.h"
+#pragma once
 
+#include "Board.h"
 #include <vector>
 
 struct Gen {
