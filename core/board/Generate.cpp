@@ -218,7 +218,182 @@ void Generate::generatePawnMoves(int idx) {
         doublePush.to = nextNextIdx;
         doublePush.piece = board.at(idx);
         doublePush.pieceTaken = 0;
+        
         moves.push_back(doublePush);
     }
 }
+
+void Generate::generateKingMoves(int idx) {
+
+    int row = idx / 8;
+    int col = idx % 8;
+
+    for(int dr : {-1,0,1}) {
+        for(int dc : {-1,0,1}) {
+            if(dr == 0 && dc == 0) continue;
+
+            int newRow = row + dr;
+            int newCol = col + dc;
+
+            if(newRow < 0 || newRow >= 8 || newCol < 0 || newCol >= 8) continue;
+
+            int toIdx = newRow*8 + newCol;
+
+            if(board.at(toIdx) == 0 || isOpponent(b, idx, toIdx)) {
+                Gen king;
+                king.from = idx;
+                king.to = toIdx;
+                king.piece = board.at(idx);
+                king.pieceTaken = board.at(toIdx) == 0 ? 0 : board.at(toIdx);
+                
+                moves.push_back(king);
+            }
+        }
+    }
+
+}
+
+void Generate::generateRookMoves(int idx) {
+   
+    const int rookDirs[4][2] = {{-1, 0}, {0, -1}, {1, 0}, {0, 1}};
+
+    int row = idx / 8;
+    int col = idx % 8;
+
+    for(auto dir : rookDirs){
+        int r = row + dir[0];
+        int c = col + dir[1];
+
+
+        while(r >= 0 && r < 8 && c >= 0 && c < 8) {
+            int newIdx = r * 8 + c;
+
+
+            if (board.at(newIdx) == 0) {
+                Gen rook;
+                rook.from = idx;
+                rook.to = newIdx;
+                rook.piece = board.at(idx);
+                rook.pieceTaken = 0;
+                
+                moves.push_back(rook);
+            
+            }else if (isOpponent(b, idx, newIdx)) {
+                // capture
+                Gen rook;
+                rook.from = idx;
+                rook.to = newIdx;
+                rook.piece = board.at(idx);
+                rook.pieceTaken = board.at(newIdx);
+            
+                moves.push_back(rook);
+                break;
+            
+            }else {
+
+                break;
+            }
+
+            r += dir[0];
+            c += dir[1];
+        }
+
+    }
+
+}
+
+void Generate::generateKnightMoves(int idx) {
+     
+    int row = idx / 8;
+    int col = idx % 8;
+
+    for(auto dir : b.knight) {
+        int r = row + dir[0];
+        int c = col + dir[1];
+
+        if (r < 0 || r >= 8 || c < 0 || c >= 8) continue;
+        
+        int newIdx = r * 8 + c;
+ 
+        if(board.at(newIdx) == 0 || isOpponent(b, idx, newIdx)) {
+            Gen knight;
+            knight.from = idx;
+            knight.to = newIdx;
+            knight.piece = board.at(idx);
+            knight.pieceTaken = board.at(newIdx) == 0 ? 0 : board.at(newIdx);
+            
+            moves.push_back(knight);
+        }
+
+    }
+
+}
+
+void Generate::generateQueenMoves(int idx) {
+    
+
+    const int queenDirs[8][2] = {
+        {-1,  0},
+        { 1,  0},
+        { 0, -1},
+        { 0,  1},
+        {-1, -1},
+        {-1,  1},
+        { 1, -1},
+        { 1,  1}
+    };
+ 
+    int row = idx / 8;
+    int col = idx % 8;
+
+    for(auto dir : queenDirs) {
+        int r = row + dir[0];
+        int c = col + dir[1];
+        
+        while(r >= 0 && r < 8 && c >= 0 && c < 8) {
+            int newIdx = r * 8 + c;
+
+            if(isOpponent(b, idx, newIdx)) {
+                Gen queen;
+                queen.from = idx;
+                queen.to = newIdx;
+                queen.piece = board.at(idx);
+                queen.pieceTaken = board.at(newIdx);
+                
+                moves.push_back(queen);
+                break;
+            
+            }else if(board.at(newIdx) == 0) {
+                Gen queen;
+                queen.from = idx;
+                queen.to = newIdx;
+                queen.piece = board.at(idx);
+                queen.pieceTaken = 0;
+                
+                moves.push_back(queen);
+
+            }else {
+                break;
+            }
+
+        }
+
+
+    }
+
+
+}
+
+
+
+
+
+
+
+
+
+
+
+
+
 

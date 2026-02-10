@@ -34,11 +34,11 @@ public:
     std::vector<Gen> generate(bool white);
     void directGen(int piece);
 
-    bool generateRookMoves(int pos);
+    void generateRookMoves(int pos);
     void generateBishopMoves(int pos);
-    bool generateKnightMoves(int pos);
-    bool generateQueenMoves(int pos);
+    void generateKnightMoves(int pos);
+    void generateQueenMoves(int pos);
     void generatePawnMoves(int pos);
-    bool generateKingMoves(int pos);
+    void generateKingMoves(int pos);
     
 };
