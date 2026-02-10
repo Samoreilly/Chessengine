@@ -123,4 +123,102 @@ void Generate::generateBishopMoves(int idx) {
     }
 }
 
+void Generate::generatePawnMoves(int idx) {
+
+    // used to generate en passant
+    LastMove& lm = b.getLastMove();
+     
+    bool white = board.at(idx) > 0; 
+    bool canMoveTwo {false};
+    int row = idx / 8;
+
+    int step = white ? 1 : -1;
+    
+    // starting rank check for double move
+    if(white && row == 1) {
+        canMoveTwo = true;
+    } else if(!white && row == 6) {
+        canMoveTwo = true;
+    }
+
+    int r = row + step;
+    int c = idx % 8;
+
+    // single forward and diagonal captures
+    for(int i : {-1, 0, 1}) {
+        int col = c + i;
+        int curr = r * 8 + col;
+
+        if(r >= 0 && r < 8 && col >= 0 && col < 8) {
+
+            if(col == c) {
+                // forward move
+                if(board.at(curr) == 0) {
+                    Gen forward;
+                    forward.from = idx;
+                    forward.to = curr;
+                    forward.piece = board.at(idx);
+                    forward.pieceTaken = 0;
+                    moves.push_back(forward);
+                }
+
+            } else if(isOpponent(b, idx, curr)) {
+                // diagonal capture
+                Gen capture;
+                capture.from = idx;
+                capture.to = curr;
+                capture.piece = board.at(idx);
+                capture.pieceTaken = board.at(curr);
+                moves.push_back(capture);
+            }
+        }
+    }
+
+    // --- EN PASSANT LOGIC ---
+    int lmToRow = lm.to / 8;
+    int lmCol = lm.to % 8;
+    int pawnCol = c;
+
+    if(white && row == 4) { // white pawn on 5th rank
+        if(lmToRow == 4 && abs(lmCol - pawnCol) == 1 &&
+           static_cast<PieceType>(abs(board.at(lm.to))) == PieceType::PAWN &&
+           isOpponent(b, idx, lm.to)) {
+
+            Gen enp;
+            enp.from = idx;
+            enp.to = lm.to - 8;      // empty square behind black pawn
+            enp.piece = board.at(idx);
+            enp.pieceTaken = board.at(lm.to); // captured pawn
+            moves.push_back(enp);
+        }
+    } else if(!white && row == 3) { // black pawn on 4th rank
+        if(lmToRow == 3 && abs(lmCol - pawnCol) == 1 &&
+           static_cast<PieceType>(abs(board.at(lm.to))) == PieceType::PAWN &&
+           isOpponent(b, idx, lm.to)) {
+
+            Gen enp;
+            enp.from = idx;
+            enp.to = lm.to + 8;      // empty square behind white pawn
+            enp.piece = board.at(idx);
+            enp.pieceTaken = board.at(lm.to); // captured pawn
+            moves.push_back(enp);
+        }
+    }
+
+    // double pawn move
+    int nextIdx = (row + step) * 8 + c;
+    int nextNextIdx = (row + step + step) * 8 + c;
+    
+    if(canMoveTwo && nextIdx >= 0 && nextNextIdx >= 0 &&
+       nextIdx < 64 && nextNextIdx < 64 &&
+       board.at(nextIdx) == 0 && board.at(nextNextIdx) == 0) {
+
+        Gen doublePush;
+        doublePush.from = idx;
+        doublePush.to = nextNextIdx;
+        doublePush.piece = board.at(idx);
+        doublePush.pieceTaken = 0;
+        moves.push_back(doublePush);
+    }
+}
 

@@ -38,7 +38,7 @@ public:
     void generateBishopMoves(int pos);
     bool generateKnightMoves(int pos);
     bool generateQueenMoves(int pos);
-    bool generatePawnMoves(int pos);
+    void generatePawnMoves(int pos);
     bool generateKingMoves(int pos);
     
 };
