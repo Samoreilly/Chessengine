@@ -40,6 +40,13 @@ public:
     //state for white/black turn
     bool white;
 
+    //used to generate moves and for check scanning
+    int dirs[4][2] = {{-1, 0}, {1, 0}, {0, -1}, {0, 1}};
+    int diag[4][2] = {{-1, 1}, {-1, -1}, {1, 1}, {1, -1}};
+    int knight[8][2] = {{2, 1}, {2, -1}, {-2, 1}, {-2, -1}, {1, 2}, {1, -2}, {-1, 2}, {-1, -2}};
+    int pawn[2][2] = {{1, 1}, {1, -1}};
+
+
     Board() : lastMove{-1, -1, 0} {
     
         board =  {  2, 4, 3, 5, 6, 3, 4, 2,

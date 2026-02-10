@@ -19,7 +19,7 @@ bool Check::scanRookQueen(int kingPos) {
     int fromRow = kingPos / 8;
     int fromCol = kingPos % 8;
 
-    for(auto dir : dirs) {
+    for(auto dir : b.dirs) {
         
         int rowStep = dir[0];
         int colStep = dir[1];
@@ -58,7 +58,7 @@ bool Check::scanDiagonal(int kingPos) {
     int fromRow = kingPos / 8;
     int fromCol = kingPos % 8;
 
-    for(auto dir : diag) {
+    for(auto dir : b.diag) {
         
         int rowStep = dir[0];
         int colStep = dir[1];
@@ -96,7 +96,7 @@ bool Check::scanKnight(int kingPos) {
     int fromRow = kingPos / 8;
     int fromCol = kingPos % 8;
 
-    for(auto dir : knight) {
+    for(auto dir : b.knight) {
         
         int rowStep = dir[0];
         int colStep = dir[1];
@@ -130,6 +130,8 @@ bool Check::scanKnight(int kingPos) {
 }
 
 bool Check::scanPawn(int kingPos) {
+   
+
     int row = kingPos / 8;
     int col = kingPos % 8;
 
@@ -145,7 +147,6 @@ bool Check::scanPawn(int kingPos) {
         if (r >= 0 && r < 8 && c >= 0 && c < 8) {
             int idx = r * 8 + c;
             int p = board.at(idx);
-
 
             int pawn = static_cast<int>(PieceType::PAWN);
             if (p == (kingIsWhite ? -pawn : pawn)) {
