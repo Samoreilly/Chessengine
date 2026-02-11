@@ -1,6 +1,7 @@
 #pragma once
 
 #include "Board.h"
+#include "Check.h"
 #include <cstdint>
 #include <vector>
 
@@ -15,7 +16,7 @@ struct Gen {
 class Generate {
  
     Board& b;
-
+    Check c{};
     std::vector<Gen> moves;
    
     std::vector<Gen> generateWhite(std::array<int8_t, 64> board);
@@ -27,8 +28,9 @@ class Generate {
     const int totalPieces = 16;
 public:
 
-    Generate(Board& b) : b(b) {}
+    Generate(Board& b) : b(b), c() {}
     Generate();
+
     void clearGen() {
         moves.clear();
     }
@@ -44,8 +46,6 @@ public:
     void generateKingMoves(std::array<int8_t, 64> board, int pos);
     
 
-    std::array<int8_t, 64> makeMove(std::array<int8_t, 64> board, Gen& gen) {
-        //TODO:
-    }
+    std::optional<std::array<int8_t, 64>> makeMove(std::array<int8_t, 64> board, bool white, Gen& gen);
 
 };

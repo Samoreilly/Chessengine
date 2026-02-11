@@ -9,6 +9,8 @@
 
 int Shell::run() {
 
+    int negValue = -2147483648;
+
     const int depth = 4;
 
     for(;;) {
@@ -17,7 +19,7 @@ int Shell::run() {
 
         b.printBoard();
         
-        s.search(board, turn, depth);
+        int max = s.search(board, turn, negValue, depth);
 
         std::cout << "Enter a move\n";
 

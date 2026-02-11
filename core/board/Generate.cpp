@@ -4,7 +4,10 @@
 #include "Board.h"
 #include <vector>
 #include <iostream>
+#include <optional>
 #include "../Utils.h"
+#include "../board/Check.h"
+#include "../board/GenerateCheck.h"
 
 /*
 Theres to be a generate() function that will serve as the main entry point
@@ -403,6 +406,32 @@ void Generate::generateQueenMoves(std::array<int8_t, 64> board, int idx) {
     }
 }
 
+std::optional<std::array<int8_t, 64>> Generate::makeMove(std::array<int8_t, 64> board, bool white, Gen& gen) {
+    
+    if(c.isCheck(white)) return std::nullopt;
+
+    int from = gen.from;
+    int to = gen.to;
+
+    GenerateCheck genCheck;
+
+    int row = from / 8;
+    int col = from % 8;
+    
+    int toRow = to / 8;
+    int toCol = to % 8;
+
+    int fromIdx = row * 8 + col;
+    int toIdx = toRow * 8 + toCol;
+
+    board.at(toIdx) = board.at(fromIdx);
+    board.at(fromIdx) = 0;
+
+    if(genCheck.isCheck(board, white)) return std::nullopt;
+
+    return board;
+
+}
 
 
 

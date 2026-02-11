@@ -1,7 +1,7 @@
 #include "Search.h"
 #include "../board/Generate.h"
 
-void Search::search(std::array<int8_t, 64> board, bool white, int depth) {
+int Search::search(std::array<int8_t, 64> board, int max, bool white, int depth) {
     if(depth == 0) {
         //return evaluate() function
     }
@@ -10,11 +10,15 @@ void Search::search(std::array<int8_t, 64> board, bool white, int depth) {
 
     for(auto ge : gen) {
 
-        std::array<int8_t,  64> copy = g.makeMove(board, ge);
+        std::optional<std::array<int8_t,  64>> copy = g.makeMove(board, white, ge);
+        
+        if(!copy.has_value()) continue;
         //TODO: make move, that will return a copy and pass into recursive function
     
-        search(copy, !white, depth - 1);
-
+        max = std::max(max, search(copy.value(), max, !white, depth - 1));
+        
     }
+
+    return max;
 
 }

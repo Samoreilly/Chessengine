@@ -11,7 +11,8 @@ class Check {
 public:
 
     Check(Board& b) : b(b), board(b.getBoard()) {}
-    
+    Check();
+
     bool isCheck(bool turn);
     bool isCheckMate();
 

@@ -16,7 +16,7 @@ public:
 
     //Search(Board b) : b(b), board(b.getBoard()) {}
 
-    void search(std::array<int8_t, 64> board, bool white, int depth);
+    int search(std::array<int8_t, 64> board, int max, bool white, int depth);
     
 
 
