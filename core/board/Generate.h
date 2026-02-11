@@ -1,6 +1,7 @@
 #pragma once
 
 #include "Board.h"
+#include <cstdint>
 #include <vector>
 
 struct Gen {
@@ -14,11 +15,11 @@ struct Gen {
 class Generate {
  
     Board& b;
-    std::array<int8_t, 64>& board;
+
     std::vector<Gen> moves;
    
-    std::vector<Gen> generateWhite();
-    std::vector<Gen> generateBlack();
+    std::vector<Gen> generateWhite(std::array<int8_t, 64> board);
+    std::vector<Gen> generateBlack(std::array<int8_t, 64> board);
 
     int bishop[4][2] = {{-1, -1}, {-1, 1}, {1, -1}, {1, 1}};
 
@@ -26,20 +27,25 @@ class Generate {
     const int totalPieces = 16;
 public:
 
-    Generate(Board& b) : b(b), board(b.getBoard()) {}
-
+    Generate(Board& b) : b(b) {}
+    Generate();
     void clearGen() {
         moves.clear();
     }
 
-    std::vector<Gen> generate(bool white);
-    void directGen(int piece);
+    std::vector<Gen> generate(std::array<int8_t, 64> board, bool white);
+    void directGen(std::array<int8_t, 64> board, int piece);
 
-    void generateRookMoves(int pos);
-    void generateBishopMoves(int pos);
-    void generateKnightMoves(int pos);
-    void generateQueenMoves(int pos);
-    void generatePawnMoves(int pos);
-    void generateKingMoves(int pos);
+    void generateRookMoves(std::array<int8_t, 64> board, int pos);
+    void generateBishopMoves(std::array<int8_t, 64> board, int pos);
+    void generateKnightMoves(std::array<int8_t, 64> board, int pos);
+    void generateQueenMoves(std::array<int8_t, 64> board, int pos);
+    void generatePawnMoves(std::array<int8_t, 64> board, int pos);
+    void generateKingMoves(std::array<int8_t, 64> board, int pos);
     
+
+    std::array<int8_t, 64> makeMove(std::array<int8_t, 64> board, Gen& gen) {
+        //TODO:
+    }
+
 };

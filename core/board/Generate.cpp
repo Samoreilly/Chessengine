@@ -13,12 +13,12 @@ the generate() will loop through the board and return the current players turn m
 
 
 
-std::vector<Gen> Generate::generate(bool white) {
+std::vector<Gen> Generate::generate(std::array<int8_t, 64> board, bool white) {
     clearGen(); 
-    return white ? generateWhite() : generateBlack(); 
+    return white ? generateWhite(board) : generateBlack(board); 
 }
 
-std::vector<Gen> Generate::generateWhite() {
+std::vector<Gen> Generate::generateWhite(std::array<int8_t, 64> board) {
     
     int pieceCounter = 0;
 
@@ -27,7 +27,7 @@ std::vector<Gen> Generate::generateWhite() {
             int idx = i * 8 + j;
 
             if(board.at(idx) > 0) {
-                directGen(idx);
+                directGen(board, idx);
                 pieceCounter++;
             }
 
@@ -42,7 +42,7 @@ std::vector<Gen> Generate::generateWhite() {
     return moves;
 }
 
-std::vector<Gen> Generate::generateBlack() {
+std::vector<Gen> Generate::generateBlack(std::array<int8_t, 64> board) {
     
     int pieceCounter = 0;
 
@@ -51,7 +51,7 @@ std::vector<Gen> Generate::generateBlack() {
             int idx = i * 8 + j;
             
             if(board.at(idx) < 0) {
-                directGen(idx);
+                directGen(board, idx);
                 pieceCounter++;
             }
 
@@ -65,34 +65,34 @@ std::vector<Gen> Generate::generateBlack() {
     return moves;
 }
 
-void Generate::directGen(int idx) {
+void Generate::directGen(std::array<int8_t, 64> board, int idx) {
 
     PieceType pieceType = static_cast<PieceType>(abs(board.at(idx)));
 
     switch(pieceType) {
 
         case PieceType::BISHOP:
-            generateBishopMoves(idx);
+            generateBishopMoves(board, idx);
             break;
 
         case PieceType::PAWN:
-            generatePawnMoves(idx);
+            generatePawnMoves(board, idx);
             break;
 
         case PieceType::KNIGHT:
-            generateKnightMoves(idx);
+            generateKnightMoves(board, idx);
             break;
 
         case PieceType::KING:
-            generateKingMoves(idx);
+            generateKingMoves(board, idx);
             break;
 
         case PieceType::ROOK:
-            generateRookMoves(idx);
+            generateRookMoves(board, idx);
             break;
 
         case PieceType::QUEEN:
-            generateQueenMoves(idx);
+            generateQueenMoves(board, idx);
             break;
 
         default: std::cout << "No directed generation in directGen()";
@@ -100,7 +100,7 @@ void Generate::directGen(int idx) {
     }
 }
 
-void Generate::generateBishopMoves(int idx) {
+void Generate::generateBishopMoves(std::array<int8_t, 64> board, int idx) {
     Gen gen;
     gen.from = idx;
     gen.piece = board.at(idx);
@@ -142,7 +142,7 @@ void Generate::generateBishopMoves(int idx) {
     }
 }
 
-void Generate::generatePawnMoves(int idx) {
+void Generate::generatePawnMoves(std::array<int8_t, 64> board, int idx) {
 
     // used to generate en passant
     LastMove& lm = b.getLastMove();
@@ -242,7 +242,7 @@ void Generate::generatePawnMoves(int idx) {
     }
 }
 
-void Generate::generateKingMoves(int idx) {
+void Generate::generateKingMoves(std::array<int8_t, 64> board, int idx) {
 
     int row = idx / 8;
     int col = idx % 8;
@@ -256,7 +256,7 @@ void Generate::generateKingMoves(int idx) {
 
             if(newRow < 0 || newRow >= 8 || newCol < 0 || newCol >= 8) continue;
 
-            int toIdx = newRow*8 + newCol;
+            int toIdx = newRow * 8 + newCol;
 
             if(board.at(toIdx) == 0 || isOpponent(b, idx, toIdx)) {
                 Gen king;
@@ -272,7 +272,7 @@ void Generate::generateKingMoves(int idx) {
 
 }
 
-void Generate::generateRookMoves(int idx) {
+void Generate::generateRookMoves(std::array<int8_t, 64> board, int idx) {
    
     static const int rookDirs[4][2] = {{-1, 0}, {0, -1}, {1, 0}, {0, 1}};
 
@@ -321,7 +321,7 @@ void Generate::generateRookMoves(int idx) {
 
 }
 
-void Generate::generateKnightMoves(int idx) {
+void Generate::generateKnightMoves(std::array<int8_t, 64> board, int idx) {
      
     int row = idx / 8;
     int col = idx % 8;
@@ -348,7 +348,7 @@ void Generate::generateKnightMoves(int idx) {
 
 }
 
-void Generate::generateQueenMoves(int idx) {
+void Generate::generateQueenMoves(std::array<int8_t, 64> board, int idx) {
 
     static const int queenDirs[8][2] = {
         {-1,  0},

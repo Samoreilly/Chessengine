@@ -4,6 +4,7 @@
 #include "../board/Piece.h"
 #include "../board/Check.h"
 #include "../board/Generate.h"
+#include "../engine/Search.h"
 
 class Shell {
 
@@ -11,6 +12,7 @@ class Shell {
     Piece p{b};
     Check c{b};
     Generate g{b};
+    Search s{};
 
 public:
 

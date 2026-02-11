@@ -5,15 +5,19 @@
 #include "../board/Check.h"
 #include "../board/Board.h"
 #include "../board/Generate.h"
+#include "../engine/Search.h"
 
 int Shell::run() {
 
+    const int depth = 4;
 
     for(;;) {
         
         bool& turn = b.getTurn();
 
         b.printBoard();
+        
+        s.search(board, turn, depth);
 
         std::cout << "Enter a move\n";
 
@@ -34,15 +38,15 @@ int Shell::run() {
             continue;
         }
         
-        std::vector<Gen> gen = g.generate(turn);
+        //std::vector<Gen> gen = g.generate(b.getBoard(), turn);
         
-        for (auto& g : gen) {
-            std::cout << "From: " << g.from
-                    << " To: " << g.to
-                    << " Piece: " << g.piece
-                    << " Taken: " << g.pieceTaken
-                    << std::endl;
-        }
+        //for (auto& g : gen) {
+          //  std::cout << "From: " << g.from
+            //        << " To: " << g.to
+              //      << " Piece: " << g.piece
+                //    << " Taken: " << g.pieceTaken
+                  //  << std::endl;
+       // }
 
         b.nextTurn();
 
