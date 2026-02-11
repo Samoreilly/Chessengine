@@ -1,9 +1,9 @@
 #pragma once
 
 #include "Board.h"
-#include "Check.h"
 #include <cstdint>
 #include <vector>
+#include "GenerateCheck.h"
 
 struct Gen {
     int from;
@@ -16,7 +16,7 @@ struct Gen {
 class Generate {
  
     Board& b;
-    Check c{};
+    GenerateCheck genCheck;
     std::vector<Gen> moves;
    
     std::vector<Gen> generateWhite(std::array<int8_t, 64> board);
@@ -28,8 +28,7 @@ class Generate {
     const int totalPieces = 16;
 public:
 
-    Generate(Board& b) : b(b), c() {}
-    Generate();
+    Generate(Board& b) : b(b) {}
 
     void clearGen() {
         moves.clear();

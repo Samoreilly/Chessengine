@@ -10,4 +10,7 @@ add_executable(
   core/board/Board.cpp
   core/board/Check.cpp
   core/board/Generate.cpp
+  core/board/GenerateCheck.cpp
+  core/engine/Evaluation.cpp
+  core/engine/Search.cpp
 )

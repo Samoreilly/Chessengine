@@ -8,54 +8,83 @@
 #include "../engine/Search.h"
 
 int Shell::run() {
-
-    int negValue = -2147483648;
-
     const int depth = 4;
 
-    for(;;) {
-        
-        bool& turn = b.getTurn();
+    for (;;) {
+        bool turn = b.getTurn(); // true = White, false = Black
+
+        // Check for checkmate/stalemate before asking for a move
+        std::vector<Gen> legalMoves;
+        std::vector<Gen> allMoves = g.generate(b.getBoard(), turn);
+        for (auto move : allMoves) {
+            std::optional<std::array<int8_t, 64>> result = g.makeMove(b.getBoard(), turn, move);
+            if (result.has_value()) {
+                legalMoves.push_back(move);
+            }
+        }
+
+        if (legalMoves.empty()) {
+            b.printBoard();
+            if (c.isCheck(turn)) {
+                std::cout << (turn ? "Black" : "White") << " wins by checkmate!\n";
+            } else {
+                std::cout << "Stalemate! The game is a draw.\n";
+            }
+            return 0;
+        }
+
+        // Engine evaluation
+        int score = s.search(b.getBoard(), depth, turn);
+        int absScore = turn ? score : -score;
+
+        // Convert to percentages
+        double whiteProb = toWinPercent(absScore);
+        double blackProb = 100.0 - whiteProb;
 
         b.printBoard();
-        
-        int max = s.search(board, turn, negValue, depth);
+        std::cout << std::fixed << std::setprecision(2);
+        std::cout << "White: " << whiteProb << "%, Black: " << blackProb << "%\n";
+        std::cout << "Evaluation: " << absScore << "\n\n";
 
-        std::cout << "Enter a move\n";
+        // Show top 3 lines for current player
+        std::vector<ScoredMove> topMoves = s.getTopMoves(b.getBoard(), depth, turn, 3);
+        std::cout << "Best lines for " << (turn ? "White" : "Black") << ":\n";
+        for (int i = 0; i < (int)topMoves.size(); i++) {
+            ScoredMove& sm = topMoves[i];
+            
+            std::cout << "  " << (i + 1) << ". ";
+            for (int j = 0; j < (int)sm.line.size(); j++) {
+                if (j > 0) std::cout << "  ";
+                std::cout << indexToAlgebraic(sm.line[j].from) << "-" << indexToAlgebraic(sm.line[j].to);
+            }
+            std::cout << "  (eval: " << sm.score << ")\n";
+        }
+        std::cout << "\n";
 
+        // Ask current player for move
+        std::cout << (turn ? "White" : "Black") << " enter your move: ";
         std::string move;
         std::cin >> move;
-        std::cout << "\n\n\n";
 
-        //std::cout << "MOVE->" << move << "\n\n";
-
-        if(!handleMove(move)) {
+        if (!handleMove(move)) {
             std::cout << "Invalid move\n";
             continue;
         }
-        
-        if(c.isCheck(turn)) {
-            std::cout << "Check\n";
+
+        // Check if the move left the player in check
+        if (c.isCheck(turn)) { 
+            std::cout << "Move leaves you in check!\n";
             c.undoMove();
             continue;
         }
-        
-        //std::vector<Gen> gen = g.generate(b.getBoard(), turn);
-        
-        //for (auto& g : gen) {
-          //  std::cout << "From: " << g.from
-            //        << " To: " << g.to
-              //      << " Piece: " << g.piece
-                //    << " Taken: " << g.pieceTaken
-                  //  << std::endl;
-       // }
 
+        // Advance to next turn
         b.nextTurn();
-
     }
-    
+
     return 0;
 }
+
 
 bool Shell::handleMove(std::string& move) {
 
@@ -78,10 +107,6 @@ bool Shell::handleMove(std::string& move) {
 
 
     PieceType piece = p.getPieceType(abs(board.at(fromIndex)));
-    
-    //std::cout << "===\n";
-    //std::cout << "PIECE-> " << static_cast<int>(piece) << "\n";
-    //std::cout << "===\n";
 
     switch(piece) {
     

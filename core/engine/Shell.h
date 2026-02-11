@@ -12,7 +12,7 @@ class Shell {
     Piece p{b};
     Check c{b};
     Generate g{b};
-    Search s{};
+    Search s{b, g};
 
 public:
 

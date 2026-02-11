@@ -2,6 +2,7 @@
 
 #include <utility>
 #include <string>
+#include <cmath>
 #include <iostream>
 #include "board/Board.h"
 
@@ -35,6 +36,18 @@ inline int8_t getIndex(std::string str) {
 inline bool isOpponent(Board& board, int from, int to) {
     return board.getBoard().at(from) * board.getBoard().at(to) < 0;
 }
+
+inline double toWinPercent(int eval) {
+    return 100.0 / (1 + exp(-eval / 100.0));
+}
+
+// Converts board index (0-63) to algebraic notation e.g. 4 -> "e1"
+inline std::string indexToAlgebraic(int idx) {
+    char col = 'a' + (idx % 8);
+    char row = '1' + (idx / 8);
+    return std::string(1, col) + std::string(1, row);
+}
+
 
 
 

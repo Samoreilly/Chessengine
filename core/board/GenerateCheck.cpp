@@ -86,6 +86,7 @@ bool GenerateCheck::scanPawn(const std::array<int8_t, 64>& board, int kingPos) {
     bool kingIsWhite = board[kingPos] > 0;
 
     int pawnRow = kingIsWhite ? row + 1 : row - 1;
+
     for(int dc : {-1,1}) {
         int r = pawnRow;
         int c = col + dc;
@@ -99,9 +100,19 @@ bool GenerateCheck::scanPawn(const std::array<int8_t, 64>& board, int kingPos) {
     return false;
 }
 
-// Dummy implementations — you will need real logic to find king positions
-int GenerateCheck::wKingPos(const std::array<int8_t, 64>& board) { /* ... */ return 60; }
-int GenerateCheck::bKingPos(const std::array<int8_t, 64>& board) { /* ... */ return 4; }
+int GenerateCheck::wKingPos(const std::array<int8_t, 64>& board) {
+    for (int i = 0; i < 64; i++) {
+        if (board[i] == static_cast<int8_t>(PieceType::KING)) return i;
+    }
+    return -1;
+}
+
+int GenerateCheck::bKingPos(const std::array<int8_t, 64>& board) {
+    for (int i = 0; i < 64; i++) {
+        if (board[i] == -static_cast<int8_t>(PieceType::KING)) return i;
+    }
+    return -1;
+}
 bool GenerateCheck::isOpponent(const std::array<int8_t, 64>& board, int kingPos, int targetPos) {
     return (board[kingPos] * board[targetPos]) < 0;
 }

@@ -1,23 +1,33 @@
+
 #pragma once
 
+#include <array>
+#include <cstdint>
+#include <vector>
+#include <string>
 #include "../board/Board.h"
 #include "../board/Generate.h"
 
-//call generator() then loop through move vector
-//apply each move to a copy of the board
-//recursively call search until depth
+struct ScoredMove {
+    std::vector<Gen> line;  // full PV: sequence of moves (depth moves long)
+    int score;              // absolute score (positive = White advantage)
+};
+
 class Search {
 
-    Generate g{};
+    Board& b;
+    Generate& g;
 
 public:
+    Search(Board& b, Generate& g) : b(b), g(g) {}
 
-    Search() {}
+    // Main search entry (NegaMax)
+    int search(std::array<int8_t, 64> board, int depth, bool white);
 
-    //Search(Board b) : b(b), board(b.getBoard()) {}
+    // Search that also collects the principal variation (best line)
+    int searchPV(std::array<int8_t, 64> board, int depth, bool white, std::vector<Gen>& pv);
 
-    int search(std::array<int8_t, 64> board, int max, bool white, int depth);
-    
-
-
+    // Returns top N moves sorted best-first for the given side
+    std::vector<ScoredMove> getTopMoves(std::array<int8_t, 64> board, int depth, bool white, int topN);
 };
+

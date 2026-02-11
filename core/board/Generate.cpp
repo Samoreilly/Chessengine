@@ -407,26 +407,17 @@ void Generate::generateQueenMoves(std::array<int8_t, 64> board, int idx) {
 }
 
 std::optional<std::array<int8_t, 64>> Generate::makeMove(std::array<int8_t, 64> board, bool white, Gen& gen) {
-    
-    if(c.isCheck(white)) return std::nullopt;
 
     int from = gen.from;
     int to = gen.to;
 
-    GenerateCheck genCheck;
-
-    int row = from / 8;
-    int col = from % 8;
-    
-    int toRow = to / 8;
-    int toCol = to % 8;
-
-    int fromIdx = row * 8 + col;
-    int toIdx = toRow * 8 + toCol;
+    int fromIdx = (from / 8) * 8 + (from % 8);
+    int toIdx = (to / 8) * 8 + (to % 8);
 
     board.at(toIdx) = board.at(fromIdx);
     board.at(fromIdx) = 0;
 
+    // Only reject if the move LEAVES our king in check
     if(genCheck.isCheck(board, white)) return std::nullopt;
 
     return board;
