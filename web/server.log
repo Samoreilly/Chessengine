@@ -1,0 +1,21 @@
+[Server] Running on http://localhost:3000
+[WSS] Client connected
+[Client →] newgame
+[Engine →] {"status": "new_game_started"}
+[Client →] search 6
+[Engine →] {"eval": 10, "bestmove": "g1f3", "topMoves": [{"score": 10, "line": ["g1f3", "d7d5", "b1c3", "g8f6", "d2d4", "b8c6"]}, {"score": 10, "line": ["d2d4", "d7d5", "b1c3", "g8f6", "g1f3", "b8c6"]}, {"score": 10, "line": ["b1c3", "b8c6", "d2d4", "g8f6", "g1f3", "d7d5"]}]}
+[WSS] Client disconnected
+[Engine] Exited with code null
+[WSS] Client connected
+[Client →] newgame
+[Engine →] {"status": "new_game_started"}
+[Client →] search 6
+[Engine →] {"eval": 10, "bestmove": "g1f3", "topMoves": [{"score": 10, "line": ["g1f3", "d7d5", "b1c3", "g8f6", "d2d4", "b8c6"]}, {"score": 10, "line": ["d2d4", "d7d5", "b1c3", "g8f6", "g1f3", "b8c6"]}, {"score": 10, "line": ["b1c3", "b8c6", "d2d4", "g8f6", "g1f3", "d7d5"]}]}
+[Client →] move e2e4
+[Engine →] {"status": "move_ok", "turn": "black"}
+[Client →] search 6
+[Engine →] {"eval": 31, "bestmove": "d7d5", "topMoves": [{"score": 31, "line": ["d7d5", "b1c3", "g8f6", "e4d5", "c7c6", "d5c6"]}, {"score": 47, "line": ["g8f6", "e4e5", "f6e4", "b1c3", "d7d5", "g1f3"]}, {"score": 53, "line": ["b8c6", "g1f3", "d7d5", "e4d5", "d8d5", "b1c3"]}]}
+[Client →] move e7e5
+[Engine →] {"status": "move_ok", "turn": "white"}
+[Client →] search 6
+[Engine →] {"eval": 35, "bestmove": "g1f3", "topMoves": [{"score": 35, "line": ["g1f3", "b8c6", "b1c3", "g8f6", "d2d4", "f8b4"]}, {"score": 35, "line": ["b1c3", "b8c6", "g1f3", "g8f6", "d2d4", "f8b4"]}, {"score": 14, "line": ["d2d4", "e5d4", "g1f3", "b8c6", "f3d4", "g8f6"]}]}

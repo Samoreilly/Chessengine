@@ -6,11 +6,11 @@
 #include "GenerateCheck.h"
 
 struct Gen {
-    int from;
-    int to;
-    int piece;
-    int pieceTaken; // 0 = no piece taken
-    bool promotion;
+    int from = 0;
+    int to = 0;
+    int piece = 0;
+    int pieceTaken = 0;
+    bool promotion = false;
 };
 
 class Generate {

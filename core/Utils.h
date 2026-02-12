@@ -7,17 +7,19 @@
 #include "board/Board.h"
 
 inline std::pair<std::string, std::string> getCoord(std::string& str) {
-    
     std::pair<std::string, std::string> pair;
-    //a8-b7
-    std::string_view from(str.data(), str.length() - 3);
-    std::string_view to(str.data() + 3, str.length());
     
-    pair.first = std::string(from);
-    pair.second = std::string(to);
+    if (str.length() == 4) {
+        // Handle "e2e4"
+        pair.first = str.substr(0, 2);
+        pair.second = str.substr(2, 2);
+    } else if (str.length() >= 5) {
+        // Handle "e2-e4" or "e2e4q"
+        pair.first = str.substr(0, 2);
+        pair.second = str.substr(str.length() == 5 ? 3 : 2, 2);
+    }
     
     return pair;
-
 }
 
 //converts for example: "a8" to an index in the 1d flat array;

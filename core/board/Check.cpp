@@ -7,7 +7,13 @@
 
 bool Check::isCheck(bool turn) {
 
-    int kingPos = turn ? b.wKingPos() : b.bKingPos();
+    // Find king by scanning — the tracked positions can become stale
+    int kingPos = -1;
+    int kingVal = turn ? 6 : -6;
+    for (int i = 0; i < 64; i++) {
+        if (board.at(i) == kingVal) { kingPos = i; break; }
+    }
+    if (kingPos < 0) return false;
 
     return scanRookQueen(kingPos) || scanDiagonal(kingPos) || scanKnight(kingPos) || scanPawn(kingPos);
 }
@@ -170,5 +176,4 @@ void Check::undoMove() {
     board.at(lm.to) = lm.pieceTaken.has_value() ? lm.pieceTaken.value() : 0;
     board.at(lm.from) = toPiece;
 
-    std::cout << "Your in check!";
 }

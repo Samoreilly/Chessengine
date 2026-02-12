@@ -2,6 +2,8 @@ cmake_minimum_required(VERSION 4.1)
 project(ChessEngine)
 
 set(CMAKE_CXX_STANDARD 20)
+set(CMAKE_CXX_FLAGS_RELEASE "-O2 -march=native -DNDEBUG")
+set(CMAKE_BUILD_TYPE Release)
 
 add_executable(
   ChessEngine core/main.cpp 

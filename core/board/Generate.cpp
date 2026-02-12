@@ -9,6 +9,12 @@
 #include "../board/Check.h"
 #include "../board/GenerateCheck.h"
 
+// Check opponent using the PASSED board array, not the Board reference.
+// This is critical for search — the board array is the hypothetical position.
+static inline bool isOpp(const std::array<int8_t, 64>& board, int from, int to) {
+    return board[from] * board[to] < 0;
+}
+
 /*
 Theres to be a generate() function that will serve as the main entry point
 the generate() will loop through the board and return the current players turn moves
@@ -127,7 +133,7 @@ void Generate::generateBishopMoves(std::array<int8_t, 64> board, int idx) {
                 
                 moves.push_back(gen);
 
-            }else if(isOpponent(b, idx, curr)) {
+            }else if(isOpp(board, idx, curr)) {
                 gen.to = curr;
                 gen.pieceTaken = board.at(curr);
                 
@@ -167,6 +173,9 @@ void Generate::generatePawnMoves(std::array<int8_t, 64> board, int idx) {
     int c = idx % 8;
 
     // single forward and diagonal captures
+    // Check if destination is promotion rank
+    bool isPromotion = (white && r == 7) || (!white && r == 0);
+
     for(int i : {-1, 0, 1}) {
         int col = c + i;
         int curr = r * 8 + col;
@@ -181,16 +190,18 @@ void Generate::generatePawnMoves(std::array<int8_t, 64> board, int idx) {
                     forward.to = curr;
                     forward.piece = board.at(idx);
                     forward.pieceTaken = 0;
+                    forward.promotion = isPromotion;
                     moves.push_back(forward);
                 }
 
-            } else if(isOpponent(b, idx, curr)) {
+            } else if(isOpp(board, idx, curr)) {
                 // diagonal capture
                 Gen capture;
                 capture.from = idx;
                 capture.to = curr;
                 capture.piece = board.at(idx);
                 capture.pieceTaken = board.at(curr);
+                capture.promotion = isPromotion;
                 moves.push_back(capture);
             }
         }
@@ -204,7 +215,7 @@ void Generate::generatePawnMoves(std::array<int8_t, 64> board, int idx) {
     if(white && row == 4) { // white pawn on 5th rank
         if(lmToRow == 4 && abs(lmCol - pawnCol) == 1 &&
            static_cast<PieceType>(abs(board.at(lm.to))) == PieceType::PAWN &&
-           isOpponent(b, idx, lm.to)) {
+           isOpp(board, idx, lm.to)) {
 
             Gen enp;
             enp.from = idx;
@@ -216,7 +227,7 @@ void Generate::generatePawnMoves(std::array<int8_t, 64> board, int idx) {
     } else if(!white && row == 3) { // black pawn on 4th rank
         if(lmToRow == 3 && abs(lmCol - pawnCol) == 1 &&
            static_cast<PieceType>(abs(board.at(lm.to))) == PieceType::PAWN &&
-           isOpponent(b, idx, lm.to)) {
+           isOpp(board, idx, lm.to)) {
 
             Gen enp;
             enp.from = idx;
@@ -249,6 +260,7 @@ void Generate::generateKingMoves(std::array<int8_t, 64> board, int idx) {
 
     int row = idx / 8;
     int col = idx % 8;
+    bool isWhite = board.at(idx) > 0;
 
     for(int dr : {-1,0,1}) {
         for(int dc : {-1,0,1}) {
@@ -261,7 +273,7 @@ void Generate::generateKingMoves(std::array<int8_t, 64> board, int idx) {
 
             int toIdx = newRow * 8 + newCol;
 
-            if(board.at(toIdx) == 0 || isOpponent(b, idx, toIdx)) {
+            if(board.at(toIdx) == 0 || isOpp(board, idx, toIdx)) {
                 Gen king;
                 king.from = idx;
                 king.to = toIdx;
@@ -269,6 +281,76 @@ void Generate::generateKingMoves(std::array<int8_t, 64> board, int idx) {
                 king.pieceTaken = board.at(toIdx) == 0 ? 0 : board.at(toIdx);
                 
                 moves.push_back(king);
+            }
+        }
+    }
+
+    // --- Castling ---
+    // Don't castle if currently in check
+    if (genCheck.isCheck(board, isWhite)) return;
+
+    if (isWhite && idx == 4) {
+        // White kingside: e1(4) -> g1(6), rook h1(7) -> f1(5)
+        if (b.canCastleKingSide(true) &&
+            board.at(5) == 0 && board.at(6) == 0 &&
+            !genCheck.isCheck(board, true) /* already checked */ ) {
+            // Check f1 and g1 not attacked
+            std::array<int8_t, 64> testF = board;
+            testF[5] = testF[4]; testF[4] = 0;
+            std::array<int8_t, 64> testG = board;
+            testG[6] = testG[4]; testG[4] = 0;
+            if (!genCheck.isCheck(testF, true) && !genCheck.isCheck(testG, true)) {
+                Gen castle;
+                castle.from = 4;
+                castle.to = 6;
+                castle.piece = board.at(4);
+                moves.push_back(castle);
+            }
+        }
+        // White queenside: e1(4) -> c1(2), rook a1(0) -> d1(3)
+        if (b.canCastleQueenSide(true) &&
+            board.at(1) == 0 && board.at(2) == 0 && board.at(3) == 0) {
+            std::array<int8_t, 64> testD = board;
+            testD[3] = testD[4]; testD[4] = 0;
+            std::array<int8_t, 64> testC = board;
+            testC[2] = testC[4]; testC[4] = 0;
+            if (!genCheck.isCheck(testD, true) && !genCheck.isCheck(testC, true)) {
+                Gen castle;
+                castle.from = 4;
+                castle.to = 2;
+                castle.piece = board.at(4);
+                moves.push_back(castle);
+            }
+        }
+    } else if (!isWhite && idx == 60) {
+        // Black kingside: e8(60) -> g8(62), rook h8(63) -> f8(61)
+        if (b.canCastleKingSide(false) &&
+            board.at(61) == 0 && board.at(62) == 0) {
+            std::array<int8_t, 64> testF = board;
+            testF[61] = testF[60]; testF[60] = 0;
+            std::array<int8_t, 64> testG = board;
+            testG[62] = testG[60]; testG[60] = 0;
+            if (!genCheck.isCheck(testF, false) && !genCheck.isCheck(testG, false)) {
+                Gen castle;
+                castle.from = 60;
+                castle.to = 62;
+                castle.piece = board.at(60);
+                moves.push_back(castle);
+            }
+        }
+        // Black queenside: e8(60) -> c8(58), rook a8(56) -> d8(59)
+        if (b.canCastleQueenSide(false) &&
+            board.at(57) == 0 && board.at(58) == 0 && board.at(59) == 0) {
+            std::array<int8_t, 64> testD = board;
+            testD[59] = testD[60]; testD[60] = 0;
+            std::array<int8_t, 64> testC = board;
+            testC[58] = testC[60]; testC[60] = 0;
+            if (!genCheck.isCheck(testD, false) && !genCheck.isCheck(testC, false)) {
+                Gen castle;
+                castle.from = 60;
+                castle.to = 58;
+                castle.piece = board.at(60);
+                moves.push_back(castle);
             }
         }
     }
@@ -300,7 +382,7 @@ void Generate::generateRookMoves(std::array<int8_t, 64> board, int idx) {
                 
                 moves.push_back(rook);
             
-            }else if (isOpponent(b, idx, newIdx)) {
+            }else if (isOpp(board, idx, newIdx)) {
                 // capture
                 Gen rook;
                 rook.from = idx;
@@ -337,7 +419,7 @@ void Generate::generateKnightMoves(std::array<int8_t, 64> board, int idx) {
         
         int newIdx = r * 8 + c;
  
-        if(board.at(newIdx) == 0 || isOpponent(b, idx, newIdx)) {
+        if(board.at(newIdx) == 0 || isOpp(board, idx, newIdx)) {
             Gen knight;
             knight.from = idx;
             knight.to = newIdx;
@@ -374,7 +456,7 @@ void Generate::generateQueenMoves(std::array<int8_t, 64> board, int idx) {
         while(r >= 0 && r < 8 && c >= 0 && c < 8) {
             int newIdx = r * 8 + c;
 
-            if(isOpponent(b, idx, newIdx)) {
+            if(isOpp(board, idx, newIdx)) {
                 Gen queen;
                 queen.from = idx;
                 queen.to = newIdx;
@@ -414,8 +496,39 @@ std::optional<std::array<int8_t, 64>> Generate::makeMove(std::array<int8_t, 64> 
     int fromIdx = (from / 8) * 8 + (from % 8);
     int toIdx = (to / 8) * 8 + (to % 8);
 
-    board.at(toIdx) = board.at(fromIdx);
-    board.at(fromIdx) = 0;
+    // Detect castling: king moving 2 squares
+    int piece = std::abs(board.at(fromIdx));
+    if (piece == 6 && std::abs(toIdx - fromIdx) == 2) {
+        // Move king
+        board.at(toIdx) = board.at(fromIdx);
+        board.at(fromIdx) = 0;
+        // Move rook
+        if (toIdx > fromIdx) {
+            // Kingside: rook from h-file to f-file
+            int rookFrom = fromIdx + 3; // h1(7) or h8(63)
+            int rookTo = fromIdx + 1;   // f1(5) or f8(61)
+            board.at(rookTo) = board.at(rookFrom);
+            board.at(rookFrom) = 0;
+        } else {
+            // Queenside: rook from a-file to d-file
+            int rookFrom = fromIdx - 4; // a1(0) or a8(56)
+            int rookTo = fromIdx - 1;   // d1(3) or d8(59)
+            board.at(rookTo) = board.at(rookFrom);
+            board.at(rookFrom) = 0;
+        }
+    } else {
+        board.at(toIdx) = board.at(fromIdx);
+        board.at(fromIdx) = 0;
+    }
+
+    // Handle pawn promotion — auto-promote to queen
+    if (gen.promotion) {
+        board.at(toIdx) = white ? 5 : -5; // Queen
+    }
+
+    // Revoke castling rights
+    // b.revokeCastling(fromIdx);
+    // b.revokeCastling(toIdx);
 
     // Only reject if the move LEAVES our king in check
     if(genCheck.isCheck(board, white)) return std::nullopt;

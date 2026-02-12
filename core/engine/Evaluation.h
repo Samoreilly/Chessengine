@@ -91,4 +91,7 @@ private:
     int evaluateKingSafety(const std::array<std::int8_t, 64>& board, int idx, bool isWhite);
     int evaluatePawnStructure(const std::array<std::int8_t, 64>& board, int idx, bool isWhite);
     int evaluateThreats(const std::array<std::int8_t, 64>& board, int idx, PieceType type, bool isWhite);
+    int evaluateRookFile(const std::array<std::int8_t, 64>& board, int idx, bool isWhite);
+    int evaluateBishopPair(const std::array<std::int8_t, 64>& board, bool isWhite);
+    int evaluateCenterControl(const std::array<std::int8_t, 64>& board, bool isWhite);
 };

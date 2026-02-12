@@ -34,6 +34,12 @@ class Board {
     int whiteKing {4};
     int blackKing {60};
 
+    // Castling rights
+    bool whiteKingSide = true;
+    bool whiteQueenSide = true;
+    bool blackKingSide = true;
+    bool blackQueenSide = true;
+
 public:
 
      
@@ -109,32 +115,86 @@ board = {
         return lastMove;
     }
 
+    // Castling rights accessors
+    bool canCastleKingSide(bool isWhite) const { return isWhite ? whiteKingSide : blackKingSide; }
+    bool canCastleQueenSide(bool isWhite) const { return isWhite ? whiteQueenSide : blackQueenSide; }
+
+    // Call when king or rook moves/captured
+    void revokeCastling(int idx) {
+        if (idx == 4) { whiteKingSide = false; whiteQueenSide = false; }       // e1 king
+        if (idx == 0) whiteQueenSide = false;   // a1 rook
+        if (idx == 7) whiteKingSide = false;    // h1 rook
+        if (idx == 60) { blackKingSide = false; blackQueenSide = false; }      // e8 king
+        if (idx == 56) blackQueenSide = false;  // a8 rook
+        if (idx == 63) blackKingSide = false;   // h8 rook
+    }
+
     void printBoard() {
-        
-        std::cout << "\n\n";
-        for(int r = 7; r >= 0; --r){
-            
-            std::cout << r + 1 << "| ";
-            for(int c = 0; c < 8; ++c) {  
-                int index = r * 8 + c;
-                std::cout << std::setw(3) << static_cast<int>(board.at(index)) << " ";
-            
+
+        // ANSI colors (Classic Walnut Theme - High Contrast)
+        const char* RESET    = "\033[0m";
+        const char* LIGHT_SQ = "\033[48;5;180m";  // Light Tan
+        const char* DARK_SQ  = "\033[48;5;94m";   // Rich Walnut Brown
+        const char* WHITE_PC = "\033[38;5;231;1m"; // Bold Pure White
+        const char* BLACK_PC = "\033[38;5;232;1m"; // Bold Solid Black
+
+        // We use the solid-filled Unicode icons for both sides
+        // because they are much more visible and "bigger" in terminals.
+        auto pieceChar = [](int8_t p) -> const char* {
+            switch (std::abs(p)) {
+                case  1: return "♟";
+                case  2: return "♜";
+                case  3: return "♝"; // Bishop
+                case  4: return "♞"; // Knight
+                case  5: return "♛";
+                case  6: return "♚";
+                default: return " ";
             }
-            std::cout << "\n\n";
-        }
-        std::cout << "    ";
-
-        for(int i = 1; i <= 8;i++) {
-            std::cout << std::setw(3) << "---" << " ";
-        }
+        };
         
-        std::cout << "\n   ";
-        for(int i = 1; i <= 8;i++) {
-            std::cout << std::setw(3) <<  char(64 + i) << " ";
+        // Helper to robustly get the icon
+        auto getPieceIcon = [&](int8_t p) -> const char* {
+            return pieceChar(p);
+        };
+
+        std::cout << "\n";
+        // Top border (restored to 7 chars wide)
+        std::cout << "      ┌───────┬───────┬───────┬───────┬───────┬───────┬───────┬───────┐\n";
+
+        for (int r = 7; r >= 0; --r) {
+            for (int line = 0; line < 3; ++line) {
+                if (line == 1) {
+                    std::cout << "  " << (r + 1) << "   │";
+                } else {
+                    std::cout << "      │";
+                }
+
+                for (int c = 0; c < 8; ++c) {
+                    int index = r * 8 + c;
+                    int8_t p = board.at(index);
+                    bool lightSquare = (r + c) % 2 == 1;
+                    const char* bg = lightSquare ? LIGHT_SQ : DARK_SQ;
+                    const char* fg = (p > 0) ? WHITE_PC : BLACK_PC;
+
+                    if (line == 1 && p != 0) {
+                        // Center line with the solid piece icon (restored centering)
+                        std::cout << bg << fg << "   " << getPieceIcon(p) << "   " << RESET << "│";
+                    } else {
+                        // Padding lines
+                        std::cout << bg << "       " << RESET << "│";
+                    }
+                }
+                std::cout << "\n";
+            }
+
+            if (r > 0) {
+                std::cout << "      ├───────┼───────┼───────┼───────┼───────┼───────┼───────┼───────┤\n";
+            }
         }
 
-        std::cout << "\n\n";
-
+        // Bottom border
+        std::cout << "      └───────┴───────┴───────┴───────┴───────┴───────┴───────┴───────┘\n";
+        std::cout << "          a       b       c       d       e       f       g       h\n\n";
     }
     
 

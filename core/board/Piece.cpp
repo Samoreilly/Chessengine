@@ -34,7 +34,6 @@ bool Piece::pawnMove(int from, int to) {
     LastMove& lm = b.getLastMove();
     
     if(from % 8 == to % 8) {
-        //if(!white) std::cout << "Black piece";
 
         if(abs(to - from) <= 16) {
             
@@ -42,7 +41,6 @@ bool Piece::pawnMove(int from, int to) {
                    
                 if(board.at(i) != 0) {                    
                     
-                    std::cout << "Invalid move";
                     return false;
                 }
             }
@@ -61,7 +59,6 @@ bool Piece::pawnMove(int from, int to) {
     
     //check for en passant or diagonal capture, left or right column and also if previous move was 2 squares
     }else if(abs(from % 8 - to % 8) == 1) {
-        // std::cout << "Entering en passant logic";
 
         int step = board.at(from) > 0 ? -8 : 8; //if white check the piece below for en passant 
         
@@ -77,7 +74,6 @@ bool Piece::pawnMove(int from, int to) {
             board.at(to) = board.at(from);
             board.at(from) = 0;
 
-            //std::cout << "Taken piece\n";
             return true;
         }
 
@@ -85,7 +81,6 @@ bool Piece::pawnMove(int from, int to) {
         //check if piece is opposite of current color 1 == -1, last piece moved was the piece were taking and it moved 2 squares
         //'to' must be unoccupied
         if(board.at(to) == 0 && board.at(to + step) == -board.at(from) && to + step == lm.to && abs(lm.to - lm.from) == 16) {
-            //std::cout << "Entering inner if statement en passant logic\n";
 
             lm.from = from;
             lm.to = to;
@@ -96,7 +91,6 @@ bool Piece::pawnMove(int from, int to) {
             board.at(to) = board.at(from);
             board.at(from) = 0;
 
-            std::cout << "En passant\n";
             
             return true;
         }
@@ -140,7 +134,6 @@ bool Piece::rookMove(int from, int to) {
         curr += step;
     }
 
-    std::cout << "Moved pieced";
 
     if(board.at(from) * board.at(to) <= 0) {
 
@@ -152,6 +145,7 @@ bool Piece::rookMove(int from, int to) {
         board.at(to) = board.at(from);
         board.at(from) = 0;
 
+        b.revokeCastling(from);
         return true;                
     }
 
@@ -170,7 +164,6 @@ bool Piece::rookMove(int from, int to) {
 
 bool Piece::knightMove(int from, int to) {
     
-    //std::cout << "Entered knight logic";
     LastMove& lm = b.getLastMove();
 
     int colDiff = abs(from % 8 - to % 8);
@@ -182,7 +175,6 @@ bool Piece::knightMove(int from, int to) {
 
 
     if(isValid && (isOpponent(b, from, to) || board.at(to) == 0)) {
-        //std::cout << "Entered knight inner logic";
             
         lm.from = from;
         lm.to = to;
@@ -192,12 +184,10 @@ bool Piece::knightMove(int from, int to) {
         board.at(to) = board.at(from);
         board.at(from) = 0;
 
-        //std::cout << "Knight moved";
         return true;
     }
 
 
-    //std::cout <<
 
     return false;
 }
@@ -229,7 +219,6 @@ bool Piece::bishopMove(int from, int to) {
     //checks if the rows and cols between from and to are equal
     //as they must be
     if (abs(dr) != abs(dc)) {
-        std::cout << "Invalid move";
         return false;
     }
 
@@ -244,7 +233,6 @@ bool Piece::bishopMove(int from, int to) {
         int idx = r * 8 + c;
 
         if (board.at(idx) != 0) {
-            //std::cout << "Path blocked";
             return false;
         }
 
@@ -253,7 +241,6 @@ bool Piece::bishopMove(int from, int to) {
     }
 
     if (board.at(to) != 0 && !isOpponent(b, from, to)) {
-        std::cout << "Invalid capture";
         return false;
     }
 
@@ -281,7 +268,6 @@ bool Piece::queenMove(int from, int to) {
     int toCol   = to % 8;
 
     if((from % 8 != to % 8 && from / 8 != to / 8 && colDiff != rowDiff)) {
-        std::cout << "Invalid move\n";
         return false;
     }
 
@@ -299,7 +285,6 @@ bool Piece::queenMove(int from, int to) {
         int idx = r * 8 + c;
 
         if(board.at(idx) != 0) {
-            std::cout << "Invalid move\n";
             return false;
         }
         
@@ -309,7 +294,6 @@ bool Piece::queenMove(int from, int to) {
     }
 
     if (board.at(to) != 0 && !isOpponent(b, from, to)) {
-        std::cout << "Invalid capture";
         return false;
     }
 
@@ -325,20 +309,67 @@ bool Piece::queenMove(int from, int to) {
 
 bool Piece::kingMove(int from, int to) {
 
-    std::cout << "Entered king logic";
-
     LastMove& lm = b.getLastMove();
 
     int rankDiff = abs(from / 8 - to / 8);
     int fileDiff = abs(from % 8 - to % 8);
 
+    // --- Castling: king moves 2 squares horizontally ---
+    if (rankDiff == 0 && fileDiff == 2) {
+        bool isWhite = board.at(from) > 0;
+
+        if (to > from) {
+            // Kingside
+            if (!b.canCastleKingSide(isWhite)) {
+                return false;
+            }
+            int rookFrom = from + 3;
+            int rookTo = from + 1;
+            // Check squares empty
+            if (board.at(from + 1) != 0 || board.at(from + 2) != 0) {
+                return false;
+            }
+            // Move king and rook
+            lm.from = from; lm.to = to;
+            lm.piece = board.at(from); lm.pieceTaken = 0;
+
+            board.at(to) = board.at(from);
+            board.at(from) = 0;
+            board.at(rookTo) = board.at(rookFrom);
+            board.at(rookFrom) = 0;
+
+            b.revokeCastling(from);
+            return true;
+        } else {
+            // Queenside
+            if (!b.canCastleQueenSide(isWhite)) {
+                return false;
+            }
+            int rookFrom = from - 4;
+            int rookTo = from - 1;
+            // Check squares empty
+            if (board.at(from - 1) != 0 || board.at(from - 2) != 0 || board.at(from - 3) != 0) {
+                return false;
+            }
+            lm.from = from; lm.to = to;
+            lm.piece = board.at(from); lm.pieceTaken = 0;
+
+            board.at(to) = board.at(from);
+            board.at(from) = 0;
+            board.at(rookTo) = board.at(rookFrom);
+            board.at(rookFrom) = 0;
+
+            b.revokeCastling(from);
+            return true;
+        }
+    }
+
+    // --- Normal king move ---
     if(rankDiff > 1 || fileDiff > 1) {
-        std::cout << "You can only move your KING 1 square";
         return false;
     }
     
     if(rankDiff == 0 && fileDiff == 0) {
-        std::cout << "Your king cannot be moved to the same spot";
         return false;
     }
 
@@ -352,17 +383,16 @@ bool Piece::kingMove(int from, int to) {
         board.at(to) = board.at(from);
         board.at(from) = 0;
 
+        b.revokeCastling(from);
         return true;
     }
 
-    std::cout << "Square is occupied by your own piece\n";
     return false;
 }
 
 bool Piece::emptyMove(int from, int to) {
 
     if(board.at(from) == 0) {
-        std::cout << "Select a piece!";
     }
     
     return false;

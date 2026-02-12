@@ -6,6 +6,8 @@
 #include "../board/Generate.h"
 #include "../engine/Search.h"
 
+enum class GameMode { ANALYSIS, VS_AI };
+
 class Shell {
 
     Board b;
@@ -14,9 +16,18 @@ class Shell {
     Generate g{b};
     Search s{b, g};
 
+    // Game mode
+    GameMode mode = GameMode::ANALYSIS;
+    bool humanIsWhite = true; // which side the human plays in AI mode
+
+    // AI makes its move automatically
+    bool makeAIMove(bool turn, int depth);
+
 public:
 
-    Shell() {}
+    Shell(bool api = false) : apiMode(api) {}
+
+    bool apiMode = false;
 
     std::array<int8_t, 64>& board = b.getBoard();
 
